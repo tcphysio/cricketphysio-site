@@ -159,14 +159,35 @@
     });
   }
 
-  /* --- Team enquiry form ------------------------------------------------ */
+  /* --- Enquiry form (Contact) ------------------------------------------- */
+  /* One form for every kind of enquiry. The "I am a" selector tags the lead,
+     and the server checks it against the same fixed list. Every door on the
+     site that leads here passes ?type=, so the selector arrives preselected. */
   var form = document.querySelector('form[data-enquiry]');
   if (form) {
     var status = form.querySelector('.formstatus');
     var submit = form.querySelector('button[type="submit"]');
     var label  = submit ? submit.querySelector('[data-label]') : null;
+    var typeSel = form.querySelector('select[name="type"]');
+    var nudge = form.querySelector('[data-player-nudge]');
+    var where = form.getAttribute('data-track-location') || 'contact_form';
+    var sentEvent = form.getAttribute('data-track') || 'enquiry_submit';
 
     function fieldOf(input) { return input.closest('.field'); }
+
+    function showNudge() {
+      if (nudge && typeSel) nudge.hidden = typeSel.value !== 'player';
+    }
+
+    if (typeSel) {
+      try {
+        var wanted = new URLSearchParams(window.location.search).get('type');
+        var ok = Array.prototype.some.call(typeSel.options, function (o) { return o.value && o.value === wanted; });
+        if (ok) typeSel.value = wanted;
+      } catch (e) { /* old browser: the visitor picks it themselves */ }
+      showNudge();
+      typeSel.addEventListener('change', showNudge);
+    }
 
     function validate(input) {
       var wrap = fieldOf(input);
@@ -175,12 +196,16 @@
       var v = (input.value || '').trim();
 
       if (input.required && !v) {
-        msg = (wrap.querySelector('label') || {}).textContent;
-        msg = 'Please enter your ' + (msg ? msg.toLowerCase().replace(/\s*\*$/, '') : 'details') + '.';
+        if (input.tagName === 'SELECT') {
+          msg = 'Choose the option that fits best.';
+        } else {
+          msg = (wrap.querySelector('label') || {}).textContent;
+          msg = 'Please enter your ' + (msg ? msg.toLowerCase().replace(/\s*\*$/, '').replace(/^your\s+/, '') : 'details') + '.';
+        }
       } else if (input.type === 'email' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
         msg = 'That email address does not look right. Check it and try again.';
       } else if (input.name === 'message' && v && v.length < 20) {
-        msg = 'A sentence or two about your squad helps me answer usefully.';
+        msg = 'A sentence or two helps me answer usefully.';
       }
 
       var err = wrap.querySelector('.err');
@@ -195,9 +220,9 @@
       return true;
     }
 
-    form.querySelectorAll('input, textarea').forEach(function (i) {
+    form.querySelectorAll('input, textarea, select').forEach(function (i) {
       i.addEventListener('blur', function () { if (i.value.trim()) validate(i); });
-      i.addEventListener('input', function () {
+      i.addEventListener(i.tagName === 'SELECT' ? 'change' : 'input', function () {
         var w = fieldOf(i);
         if (w && w.getAttribute('data-invalid') === 'true') validate(i);
       });
@@ -207,11 +232,11 @@
       e.preventDefault();
       if (status) status.removeAttribute('data-state');
 
-      var fields = Array.prototype.slice.call(form.querySelectorAll('input[required], textarea[required], input[type="email"]'));
+      var fields = Array.prototype.slice.call(form.querySelectorAll('input[required], select[required], textarea[required], input[type="email"]'));
       var bad = fields.filter(function (i) { return !validate(i); });
       if (bad.length) {
         bad[0].focus();
-        track('team_enquiry_invalid', bad[0].name);
+        track('enquiry_invalid', bad[0].name, where);
         return;
       }
 
@@ -220,7 +245,7 @@
       var hp = form.querySelector('input[name="company"]');
       if (hp && hp.value) {
         if (status) { status.setAttribute('data-state', 'ok'); status.innerHTML = '<p>Thanks. Your enquiry is on its way.</p>'; }
-        form.reset();
+        form.reset(); showNudge();
         return;
       }
 
@@ -229,6 +254,7 @@
 
       var payload = {};
       new FormData(form).forEach(function (v, k) { payload[k] = v; });
+      var kind = payload.type || null;
 
       fetch('/api/enquiry', {
         method: 'POST',
@@ -239,28 +265,24 @@
       .then(function () {
         if (status) {
           status.setAttribute('data-state', 'ok');
-          status.innerHTML = '<p><strong>Thanks, that has sent.</strong> I answer enquiries myself, usually within two business days. If it is time-critical, call ' +
-            '<a href="' + (TCP.clinic ? TCP.clinic.phoneLink : 'tel:+61458007583') + '" data-track="phone_click">' +
-            (TCP.clinic ? TCP.clinic.phoneDisplay : '0458 007 583') + '</a>.</p>';
+          status.innerHTML = '<p><strong>Thanks, that has sent.</strong> I answer enquiries myself, usually within two business days.</p>';
           status.focus();
         }
-        form.reset();
-        track('team_enquiry_submit');
+        form.reset(); showNudge();
+        track(sentEvent, kind, where);
       })
       .catch(function (err) {
         if (status) {
           status.setAttribute('data-state', 'err');
           status.innerHTML = '<p><strong>That did not send.</strong> Rather than lose what you wrote, email it to ' +
-            '<a href="mailto:thihan@thecricket.physio" data-track="email_click">thihan@thecricket.physio</a> ' +
-            'or call <a href="' + (TCP.clinic ? TCP.clinic.phoneLink : 'tel:+61458007583') + '" data-track="phone_click">' +
-            (TCP.clinic ? TCP.clinic.phoneDisplay : '0458 007 583') + '</a>.</p>';
+            '<a href="mailto:thihan@thecricket.physio" data-track="email_click" data-track-location="contact_form_error">thihan@thecricket.physio</a>.</p>';
           status.focus();
         }
-        track('team_enquiry_error', String(err && err.message));
+        track('enquiry_error', String(err && err.message), where);
       })
       .then(function () {
         if (submit) { submit.removeAttribute('data-loading'); submit.removeAttribute('aria-disabled'); }
-        if (label) label.textContent = 'Send enquiry';
+        if (label) label.textContent = 'Send';
       });
     });
   }

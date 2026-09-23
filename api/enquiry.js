@@ -1,7 +1,7 @@
 /* ============================================================================
-   The Cricket Physio — team and organisation enquiry handler
+   The Cricket Physio — enquiry handler
    ----------------------------------------------------------------------------
-   Receives the enquiry form and emails it through Resend. Runs as a Vercel
+   Receives the Contact form and emails it through Resend. Runs as a Vercel
    Function, so enquiries are never stored by a third-party form service.
    Nothing is written to disk or to a database: the submission becomes an
    email and is then gone from here.
@@ -28,6 +28,18 @@
 const DEFAULT_TO   = 'thihan@thecricket.physio';
 const DEFAULT_FROM = 'The Cricket Physio <enquiries@thecricket.physio>';
 const MAX = { name: 120, email: 160, organisation: 160, message: 5000 };
+
+/* The "I am a" selector on /contact. The value tags the email subject, so
+   Thihan triages from the inbox without opening every message. Anything
+   not on this list is rejected: the form only offers these five. Keep this
+   list and the <select> in contact.html in step. */
+const TYPES = {
+  organisation: 'Organisation',
+  player:       'Player or parent',
+  coach:        'Coach or clinician',
+  media:        'Media or event organiser',
+  other:        'Other'
+};
 
 /* An address pasted into a dashboard picks up things Resend will not accept:
    wrapping quotes, a non-breaking space from copying out of a web page, curly
@@ -91,8 +103,11 @@ export default async function handler(req, res) {
   const email = clean(body.email, MAX.email);
   const org   = clean(body.organisation, MAX.organisation);
   const msg   = clean(body.message, MAX.message);
+  const type  = clean(body.type, 20);
 
-  if (!name || !email || !msg) return res.status(400).json({ error: 'Missing required fields' });
+  if (!name || !email || !msg || !type) return res.status(400).json({ error: 'Missing required fields' });
+  if (!Object.prototype.hasOwnProperty.call(TYPES, type)) return res.status(400).json({ error: 'Invalid enquiry type' });
+  const kind = TYPES[type];
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return res.status(400).json({ error: 'Invalid email' });
 
   const key = process.env.RESEND_API_KEY;
@@ -105,15 +120,17 @@ export default async function handler(req, res) {
   const from = normaliseAddress(process.env.ENQUIRY_FROM, DEFAULT_FROM, 'ENQUIRY_FROM');
 
   const text =
-    'Team / organisation enquiry from thecricket.physio\n\n' +
+    'Enquiry from thecricket.physio\n\n' +
+    'I am a: ' + kind + '\n' +
     'Name: ' + name + '\n' +
     'Email: ' + email + '\n' +
     'Organisation: ' + (org || 'not given') + '\n\n' +
     'Message:\n' + msg + '\n';
 
   const html =
-    '<h2>Team / organisation enquiry</h2>' +
-    '<p><strong>Name:</strong> ' + escapeHtml(name) + '<br>' +
+    '<h2>' + escapeHtml(kind) + ' enquiry</h2>' +
+    '<p><strong>I am a:</strong> ' + escapeHtml(kind) + '<br>' +
+    '<strong>Name:</strong> ' + escapeHtml(name) + '<br>' +
     '<strong>Email:</strong> ' + escapeHtml(email) + '<br>' +
     '<strong>Organisation:</strong> ' + escapeHtml(org || 'not given') + '</p>' +
     '<p><strong>Message</strong></p><p>' + escapeHtml(msg).replace(/\n/g, '<br>') + '</p>' +
@@ -127,7 +144,7 @@ export default async function handler(req, res) {
         from: from,
         to: [to],
         reply_to: email,
-        subject: headerSafe('Cricket Physio enquiry: ' + name + (org ? ' (' + org + ')' : '')),
+        subject: headerSafe('[' + kind + '] Enquiry from ' + name + (org ? ' (' + org + ')' : '')),
         text: text,
         html: html
       })
