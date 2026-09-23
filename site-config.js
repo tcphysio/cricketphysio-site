@@ -10,8 +10,8 @@
    too.
 
    RELATED SITE: bridgeroad.physio has its own copy of this pattern in
-   site-config.js. In-person appointments are booked there, not here. Keep the
-   Halaxy URLs below in step with that file.
+   site-config.js. In-person consults are booked on the Bridge Road calendar.
+   Keep the cricket consult link below in step with that clinic's Halaxy setup.
    ========================================================================== */
 
 window.TCP = (function () {
@@ -22,34 +22,44 @@ window.TCP = (function () {
     email: 'thihan@thecricket.physio',
     canonicalHost: 'https://www.thecricket.physio',
 
-    /* --- The clinic where in-person appointments happen ------------------ *
-       The Cricket Physio does not hold its own premises. Melbourne
-       appointments are seen at Bridge Road Physiotherapy, and the booking is
-       made on that site. Say so plainly wherever in-person work is mentioned:
-       a patient should never be surprised about which door they walk through.
-       NAP below mirrors bridgeroad.physio/site-config.js exactly. Do not
-       publish a second, differing local-business identity for this address. */
+    /* --- Where in-person consults happen --------------------------------- *
+       The Cricket Physio has no premises and no address of its own. In-person
+       consults happen at Bridge Road Physiotherapy in Richmond, and that
+       clinic's site and Google Business Profile carry the one street address.
+       Do not publish it here: a second listing for the same address confuses
+       local search and makes the cricket brand look like a second clinic.
+
+       Bridge Road is named in four places only, as the brief sets out: the
+       Home line under the players door, the Players booking section, one
+       sentence on About, and the footer line. Privacy and Terms also name
+       it, because it holds the in-person clinical records. lint.py enforces
+       this. Each approved spot carries a data-br-spot attribute. */
     clinic: {
       name: 'Bridge Road Physiotherapy',
-      street: '507 Bridge Road',
       suburb: 'Richmond',
       state: 'VIC',
-      postcode: '3121',
-      note: 'Inside Uplift Gym. No gym membership is needed.',
-      phoneDisplay: '0458 007 583',
-      phoneLink: 'tel:+61458007583',
       site: 'https://www.bridgeroad.physio'
     },
 
     /* --- Booking --------------------------------------------------------- *
-       Every booking link leaves this domain. utm() below tags them so the
-       Bridge Road analytics can tell a Cricket Physio referral from a local
-       search. Never hand-write these URLs in the markup; call cfg.book(). */
-    halaxy: {
-      direct: 'https://www.halaxy.com/book/bridge-road-physiotherapy/location/1330449',
-      widget: 'https://www.halaxy.com/book/widget/physiotherapist/mr-thihan-chandramohan/576911/1330449'
+       Two Halaxy calendars, two booking links, as the brief sets out.
+
+         telehealth    The Cricket Physio's own telehealth calendar.
+         bridgeRoad    The "cricket consult" service on the Bridge Road
+                       calendar, for in-person consults in Richmond.
+
+       Both are placeholders until Thihan sends the links. When they arrive,
+       search the repo for TODO_TELEHEALTH_URL and TODO_BRIDGE_ROAD_CRICKET_URL
+       and replace every instance: the markup carries the real href so the
+       buttons work with JavaScript off.
+
+       Links that leave this domain carry data-utm; script.js tags them at
+       load with utm() below. The placeholders are not http links, so they
+       stay untagged until the real URLs go in. */
+    booking: {
+      telehealth: 'TODO_TELEHEALTH_URL',
+      bridgeRoad: 'TODO_BRIDGE_ROAD_CRICKET_URL'
     },
-    bridgeRoadBookPage: 'https://www.bridgeroad.physio/book.html',
 
     /* --- The bowling workload tool ---------------------------------------
        A separate product on its own subdomain. Access is by request, not open
@@ -60,7 +70,7 @@ window.TCP = (function () {
     links: {
       linkedin: 'https://www.linkedin.com/in/thihanchandramohan',
       instagram: 'https://www.instagram.com/thecricketphysio',
-      smaFinder: 'https://sma.org.au/sports-healthcare-finder/'
+      ahpraRegister: 'https://www.ahpra.gov.au/registration/registers-of-practitioners.aspx'
     },
 
     /* AHPRA registration. Mirrors bridgeroad.physio. */
@@ -86,45 +96,78 @@ window.TCP = (function () {
       '&utm_campaign=' + encodeURIComponent(campaign || 'cricket_physio');
   };
 
-  cfg.book = function (campaign) { return cfg.utm(cfg.bridgeRoadBookPage, campaign); };
-
   /* --------------------------------------------------------------------- */
   /* Conversion tracking                                                    */
   /* --------------------------------------------------------------------- */
-  /* No third-party tracker is loaded by this site. Any element carrying a
-     data-track attribute fires a named event on click, pushed to
-     window.dataLayer and dispatched as a DOM event. If analytics is added
-     later it picks these up with no markup changes.
+  /* No third-party tracker is loaded yet. Every booking and enquiry element
+     carries two attributes:
+
+       data-track            the event, from the list below
+       data-track-location   where it sits, for example header, footer,
+                             players_booking, org_hero
+
+     A click pushes one object to window.dataLayer and dispatches a DOM event:
+
+       { event: 'tcp_event', tcp_action, tcp_location, tcp_detail }
+
+     tcp_detail is data-track-detail when set, otherwise the link's href.
+     When Google Tag Manager arrives: one Custom Event trigger on tcp_event,
+     and three Data Layer Variables for tcp_action, tcp_location and
+     tcp_detail. No markup changes needed.
 
      Event names in use:
-       book_click            Any link into the Bridge Road booking flow
-       telehealth_click      Telehealth booking or enquiry
-       team_enquiry_submit   Team / organisation enquiry sent
-       team_enquiry_error    Team enquiry failed to send
-       team_enquiry_invalid  Blocked by inline validation; detail is the field
-       tool_open             Bowling workload tool opened
-       phone_click           Any tel: link
+       book_telehealth       Book telehealth button (Players)
+       book_bridge_road      Any link to the Bridge Road cricket booking page
+                             (Players, Home line, About sentence, footer)
+       book_route            A link that takes a player to the booking pair
+                             on /players (guides, Contact, 404)
+       enquiry_scoping_call  Book a scoping call (Organisations)
+       enquiry_click         Any other link to the Contact form
+       enquiry_submit        Contact form sent; detail is the "I am a" value
+       enquiry_invalid       Blocked by inline validation; detail is the field
+       enquiry_error         Contact form failed to send; detail is the error
+       door_click            The three doors on Home; detail names the door
        email_click           Any mailto: link
-       bridgeroad_click      Any outbound link to bridgeroad.physio
+       bridgeroad_click      Any other outbound link to bridgeroad.physio
+       tool_open             Bowling workload tool opened
        article_read          Article scrolled past 75%
-       theme_toggle          Light/dark switched; detail is the new theme      */
+       theme_toggle          Light/dark switched; detail is the new theme
 
-  cfg.track = function (action, detail) {
+     lint.py fails the build on any booking or enquiry link that is missing
+     either attribute. */
+
+  cfg.track = function (action, detail, location) {
     try {
       window.dataLayer = window.dataLayer || [];
-      window.dataLayer.push({ event: 'tcp_event', tcp_action: action, tcp_detail: detail || null });
-      document.dispatchEvent(new CustomEvent('tcp:track', { detail: { action: action, detail: detail || null } }));
-    } catch (e) { /* tracking must never block a booking or a phone call */ }
+      window.dataLayer.push({
+        event: 'tcp_event',
+        tcp_action: action,
+        tcp_location: location || null,
+        tcp_detail: detail || null
+      });
+      document.dispatchEvent(new CustomEvent('tcp:track', {
+        detail: { action: action, location: location || null, detail: detail || null }
+      }));
+    } catch (e) { /* tracking must never block a booking or an enquiry */ }
   };
 
   document.addEventListener('click', function (e) {
-    var el = e.target.closest ? e.target.closest('[data-track]') : null;
-    if (el) cfg.track(el.getAttribute('data-track'), el.getAttribute('href'));
+    var el = e.target.closest ? e.target.closest('a[data-track], button[data-track]') : null;
+    if (!el) return;
+    cfg.track(
+      el.getAttribute('data-track'),
+      el.getAttribute('data-track-detail') || el.getAttribute('href'),
+      el.getAttribute('data-track-location')
+    );
   });
 
+  /* Forms marked data-enquiry report their own outcome from script.js
+     (sent, invalid or failed), so a submit attempt alone is not counted. */
   document.addEventListener('submit', function (e) {
     var f = e.target;
-    if (f && f.matches && f.matches('form[data-track]')) cfg.track(f.getAttribute('data-track'));
+    if (f && f.matches && f.matches('form[data-track]:not([data-enquiry])')) {
+      cfg.track(f.getAttribute('data-track'), null, f.getAttribute('data-track-location'));
+    }
   });
 
   return cfg;

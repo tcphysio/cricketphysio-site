@@ -2,15 +2,17 @@
 """Static QA over the generated site: links, headings, alt text, labels, metadata."""
 import os, re, glob, json, html as H
 from collections import defaultdict
-ROOT = ".."
+ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 
-files = sorted(glob.glob(ROOT + "/**/*.html", recursive=True))
+files = sorted(f for f in glob.glob(ROOT + "/**/*.html", recursive=True) if "/docs/" not in f)
 # Map every URL the site is able to serve (cleanUrls, trailingSlash:false)
 served = set()
 for f in files:
     rel = os.path.relpath(f, ROOT)[:-5]
     served.add("/" + ("" if rel == "index" else (rel[:-6] if rel.endswith("/index") else rel)))
 served.add("/")
+
+ASSET_EXT = (".css",".js",".xml",".txt",".svg",".png",".jpg",".jpeg",".webp",".ico")
 
 REDIRECTS = set()
 vj = json.load(open(ROOT + "/vercel.json"))
@@ -25,11 +27,15 @@ for f in files:
     # --- internal links resolve
     for href in set(re.findall(r'href="(/[^"#?]*)(?:[#?][^"]*)?"', s)):
         base = href.rstrip("/") or "/"
-        if base.startswith("/assets") or base.endswith((".css",".js",".xml",".txt",".svg",".png")):
+        if base.startswith("/assets") or base.endswith(ASSET_EXT):
             if not os.path.exists(ROOT + base): problems[rel].append(f"missing asset {base}")
             continue
         if base not in served and base not in REDIRECTS:
             problems[rel].append(f"dead internal link {href}")
+
+    # --- images and scripts exist
+    for src in set(re.findall(r'src="(/[^"#?]*)', s)):
+        if not os.path.exists(ROOT + src): problems[rel].append(f"missing asset {src}")
 
     # --- heading order
     hs = [int(m) for m in re.findall(r'<h([1-6])[ >]', s)]
