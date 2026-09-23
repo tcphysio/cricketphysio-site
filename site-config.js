@@ -42,23 +42,25 @@ window.TCP = (function () {
     },
 
     /* --- Booking --------------------------------------------------------- *
-       Two Halaxy calendars, two booking links, as the brief sets out.
+       Two ways to book, as the brief sets out.
 
-         telehealth    The Cricket Physio's own telehealth calendar.
-         bridgeRoad    The "cricket consult" service on the Bridge Road
-                       calendar, for in-person consults in Richmond.
+         telehealth    The Cricket Physio telehealth location in Halaxy. Same
+                       Halaxy account as Bridge Road, its own location, so
+                       invoices carry the Cricket Physio letterhead. A
+                       placeholder until that location exists: search the repo
+                       for TODO_TELEHEALTH_URL and replace every instance.
+         bridgeRoad    The Bridge Road cricket page. Players land there, see
+                       the address and what to expect, and book the cricket
+                       consult on that site. Sending them to the page rather
+                       than straight to Halaxy lets Bridge Road's Tag Manager
+                       count the referral.
 
-       Both are placeholders until Thihan sends the links. When they arrive,
-       search the repo for TODO_TELEHEALTH_URL and TODO_BRIDGE_ROAD_CRICKET_URL
-       and replace every instance: the markup carries the real href so the
-       buttons work with JavaScript off.
-
-       Links that leave this domain carry data-utm; script.js tags them at
-       load with utm() below. The placeholders are not http links, so they
-       stay untagged until the real URLs go in. */
+       The markup carries the real href so the buttons work with JavaScript
+       off. Links that leave this domain carry data-utm; script.js tags them
+       at load with utm() below. */
     booking: {
       telehealth: 'TODO_TELEHEALTH_URL',
-      bridgeRoad: 'TODO_BRIDGE_ROAD_CRICKET_URL'
+      bridgeRoad: 'https://www.bridgeroad.physio/cricket.html'
     },
 
     /* --- The bowling workload tool ---------------------------------------

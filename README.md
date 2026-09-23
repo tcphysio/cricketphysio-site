@@ -70,14 +70,22 @@ These show on the site until the real content arrives. `lint.py` lists them.
 
 | Placeholder | Where | What replaces it |
 |---|---|---|
-| `TODO_TELEHEALTH_URL` | Players | Halaxy link for the telehealth calendar |
-| `TODO_BRIDGE_ROAD_CRICKET_URL` | Players, Home, About, footer on every page | Halaxy link for the Bridge Road cricket consult service |
+| `TODO_TELEHEALTH_URL` | Players | Booking link for the Cricket Physio telehealth location in Halaxy |
 | `[SMA title]` | Home roles strip, About | Exact Sports Medicine Australia title |
 | `[FROM]` `[TO]` | About | Start year for SMA, dates for Cricket Australia |
 | `[QUALIFICATIONS: ...]` | About | Degree, institution, year, postgraduate study |
 
 Replace a booking placeholder with a search across the repo: the real URL goes
 in the markup so the buttons work with JavaScript off.
+
+## Halaxy
+
+One Halaxy account, two locations. Bridge Road Physiotherapy is the existing
+location. The Cricket Physio telehealth location sits in the same account, so
+patients, records and accounts stay in one place, and carries its own invoice
+letterhead. Telehealth bookings go to that location. In-person bookings go
+through the Bridge Road cricket page, which books the cricket consult on the
+Bridge Road location.
 
 ## Bridge Road
 
@@ -97,8 +105,9 @@ belongs to Bridge Road and its Google Business Profile only. A second listing
 for the same address confuses local search and makes this brand look like a
 second clinic.
 
-Every link to Bridge Road points at its cricket booking page, not its homepage,
-and carries `data-utm` so the Bridge Road analytics see the referral.
+Every link to Bridge Road points at its cricket page
+(`https://www.bridgeroad.physio/cricket.html`), not its homepage, and carries
+`data-utm` so the Bridge Road analytics see the referral.
 
 ## Fees
 
