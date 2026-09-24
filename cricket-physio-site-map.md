@@ -1,3 +1,5 @@
+> **Superseded in part on 24 September 2026 by `docs/website-brief.md`.** Where the two disagree, the brief wins. Section 1.3 of the brief lists every decision that changed, including priced offers, audience order and the workload tool CTA.
+
 # The Cricket Physio: Website Map
 
 Decisions locked 23 Sep 2026 · Thihan Chandramohan

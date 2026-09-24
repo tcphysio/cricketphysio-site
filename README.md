@@ -49,6 +49,10 @@ generated regions, which `_tools/build.py` owns:
 - Between `<!-- build:NAME -->` and `<!-- /build:NAME -->`: edit `data/offers.json`.
 - The text of any element with `data-offer="KEY"`: edit `data/offers.json`.
 - Between `<!-- build:faq-schema -->` markers: edit the visible FAQ on the page.
+- The `?v=` hash on css, js and image URLs: computed by the build from the file's
+  content. `vercel.json` caches those files as immutable for a year, so the hash is
+  what makes a changed file reach returning visitors. Fonts are not hashed; give a
+  changed font file a new name.
 
 Then run, from the repo root, before every commit:
 

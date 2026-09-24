@@ -19,11 +19,13 @@ What it writes
      KEY is one of the keys in tokens() below.
   4. FAQ schema: <!-- build:faq-schema --> in <head> is filled from the
      page's visible .faq block, so the schema never drifts from the page.
+  5. Cache-busting: local css, js and image references get ?v=<content hash>.
 
 Usage
   python3 _tools/build.py            rewrite files in place
   python3 _tools/build.py --check    change nothing; exit 1 if any file is stale
 """
+import hashlib
 import html
 import json
 import re
@@ -473,6 +475,28 @@ def inline_values(text):
     return re.sub(r'(<(\w+)\b[^>]*\bdata-offer="([^"]+)"[^>]*>)(.*?)(</\2>)', rep, text, flags=re.S)
 
 
+# Cache busting. vercel.json serves css, js and images as immutable for a year,
+# so a changed file must get a new URL or returning visitors keep the old one.
+# Every local reference gets ?v=<first 8 hex of the file's SHA-1>. Fonts are
+# left alone: style.css loads them by bare URL, and a versioned preload would
+# no longer match that request. Rename a font file if you ever change it.
+ASSET_REF = re.compile(
+    r'(?<=["\s,])((?:https://www\.thecricket\.physio)?/(?:style\.css|script\.js|site-config\.js|assets/[\w./-]+\.(?:svg|png|jpg|jpeg|webp)))(?:\?v=[0-9a-f]{8})?(?=[\s",])')
+_hashes = {}
+
+
+def version_assets(text):
+    def rep(m):
+        url = m.group(1)
+        local = ROOT / url.split("thecricket.physio", 1)[-1].lstrip("/")
+        if not local.exists():
+            raise FileNotFoundError(f"asset referenced but missing: {url}")
+        if local not in _hashes:
+            _hashes[local] = hashlib.sha1(local.read_bytes()).hexdigest()[:8]
+        return f"{url}?v={_hashes[local]}"
+    return ASSET_REF.sub(rep, text)
+
+
 def process(path):
     text = path.read_text()
     url = page_url(path)
@@ -488,6 +512,7 @@ def process(path):
     if "<!-- build:faq-schema -->" in new:
         new = replace_between(new, "<!-- build:faq-schema -->", "<!-- /build:faq-schema -->", faq_schema(new))
     new = inline_values(new)
+    new = version_assets(new)
     return text, new
 
 
