@@ -1,0 +1,251 @@
+{
+  "_readme": "Single source of truth for every price, inclusion and rule on the membership and club pages. Edit here, then run `python3 _tools/build.py` and commit both. Never hand-edit a price in HTML: the build overwrites it and `build.py --check` fails CI-style QA if the two disagree. Commercial rules in docs/website-brief.md section 17 must match this file.",
+  "currency": "AUD",
+  "updated": "2026-09-24",
+
+  "tiers": [
+    {
+      "id": "essentials",
+      "name": "Essentials",
+      "label": "Bronze",
+      "tagline": "Structure your training. Track your bowling. Spot problems earlier.",
+      "feels": "I have the right tools and structure.",
+      "summary": "Tools, programs and automated monitoring.",
+      "verbs": "Track. Learn. Manage.",
+      "bestFor": "Players who want better systems without ongoing one-to-one clinical management.",
+      "price": { "monthly": 79, "junior": 65, "upfront": 853, "upfrontPeriod": "year", "upfrontLabel": "a year, paid upfront" },
+      "commitment": "No minimum commitment",
+      "capacity": 25,
+      "flag": null,
+      "highlights": [
+        "Bowling Workload Tool with load and soreness alerts",
+        "Self-monitoring dashboard and automated check-ins",
+        "Cricket rehab, strength and warm-up libraries",
+        "20% off triage, screening and Return to Performance Assessment"
+      ],
+      "includesLead": null,
+      "includes": [
+        { "group": "Set-up", "items": ["Structured online onboarding", "Self-screening"] },
+        { "group": "Monitoring", "items": ["Bowling Workload Tool access", "Workload history", "Automated bowling-load alerts", "Soreness alerts", "Personal self-monitoring dashboard", "Automated check-ins"] },
+        { "group": "Programs and resources", "items": ["Cricket-specific rehab library", "Strength and physical preparation library", "Warm-up resources", "Injury-risk management resources", "Standard training guidance"] },
+        { "group": "Member rates", "items": ["20% off telehealth injury triage", "20% off Sports Injury Screening", "20% off Return to Performance Assessment"] }
+      ],
+      "notIncluded": ["Direct messaging", "Scheduled reviews", "Individual rehabilitation plans", "Personal S&C programming", "Clinician interpretation of monitoring", "Coach communication", "In-person treatment discount"],
+      "rules": {
+        "minimum": "None",
+        "cancel": "Any time before your next billing date",
+        "upgrade": "Any time",
+        "downgrade": "Not applicable",
+        "pause": "Flexible, with notice"
+      },
+      "cta": { "label": "Join Essentials", "track": "membership_essentials_click", "href": "/cricket-performance/players?tier=essentials#apply", "checkoutUrl": null }
+    },
+    {
+      "id": "performance",
+      "name": "Performance",
+      "label": "Silver",
+      "tagline": "Your cricket physio, involved throughout the season.",
+      "feels": "I have a cricket physio overseeing my injury, workload and return to performance.",
+      "summary": "Individual clinical oversight.",
+      "verbs": "Assess. Plan. Review.",
+      "bestFor": "Players managing an injury, returning to cricket, dealing with recurring problems or wanting regular expert oversight.",
+      "price": { "monthly": 449, "junior": 360, "upfront": 1212, "upfrontPeriod": "3 months", "upfrontLabel": "for 3 months, paid upfront" },
+      "commitment": "1-month minimum",
+      "capacity": 10,
+      "flag": "Individual clinical support",
+      "highlights": [
+        "60-minute assessment and baseline physical testing",
+        "Monthly 30-minute review, alerts escalated earlier when it matters",
+        "Individual rehab, return-to-performance and return-to-bowling planning",
+        "Imaging review, referrals and injury-specific coach communication"
+      ],
+      "includesLead": null,
+      "includes": [
+        { "group": "Assessment and testing", "items": ["60-minute initial assessment", "In person or telehealth, depending on needs", "Baseline physical testing", "Role-specific performance targets", "Formal re-testing every 12 weeks"] },
+        { "group": "Reviews and access", "items": ["Monthly 30-minute review", "Flexible scheduling around cricket", "Clinically necessary telehealth follow-up", "New injury triage", "Limited direct messaging, reply target within 72 hours, 7 days", "Priority booking", "Priority return-to-performance testing"] },
+        { "group": "Rehab and preparation", "items": ["Individual rehabilitation programming", "Return-to-performance planning", "Return-to-bowling planning", "General physical preparation template", "Injury-related program modifications", "General sports nutrition guidance", "Recovery guidance"] },
+        { "group": "Monitoring", "items": ["Bowling Workload Tool", "Player dashboard", "Monthly workload review", "Monthly soreness review", "Review of automated alerts", "Clinically important alerts escalated earlier", "Video review when clinically relevant", "Short written summary after each review"] },
+        { "group": "Your support team", "items": ["Injury-specific coach and S&C communication", "Imaging review", "Referral coordination", "Communication with external clinicians"] },
+        { "group": "Member rates", "items": ["20% off separate in-person physio services"] }
+      ],
+      "notIncluded": ["Individual S&C programming", "Weekly reviews", "Ongoing coach communication outside injury and return-to-play issues", "Hands-on treatment, which is booked separately at the member rate", "Emergency or urgent medical care"],
+      "rules": {
+        "minimum": "1 month",
+        "cancel": "Any time before your next billing date, after the first month",
+        "upgrade": "Any time",
+        "downgrade": "At the end of the billing period",
+        "pause": "Flexible, with notice"
+      },
+      "cta": { "label": "Join Performance", "track": "membership_performance_click", "href": "/cricket-performance/players?tier=performance#apply", "checkoutUrl": null }
+    },
+    {
+      "id": "integrated",
+      "name": "Integrated Performance",
+      "label": "Gold",
+      "tagline": "High-performance medical and physical preparation support built around you.",
+      "feels": "I have my physical preparation, injury management and cricket workload managed together.",
+      "summary": "Ongoing high-performance management.",
+      "verbs": "Monitor. Adapt. Coordinate.",
+      "bestFor": "Players wanting ongoing management of workload, rehabilitation, physical preparation and communication across their support team.",
+      "price": { "monthly": 949, "junior": 760, "upfront": 2562, "upfrontPeriod": "3 months", "upfrontLabel": "for 3 months, paid upfront" },
+      "commitment": "3-month minimum",
+      "capacity": 5,
+      "flag": null,
+      "highlights": [
+        "Weekly review and direct messaging, 24-hour reply target",
+        "Individual S&C: strength, power, speed and conditioning",
+        "Full-season planning of gym, bowling volume and matches",
+        "Ongoing coordination with your coach, S&C and clinicians"
+      ],
+      "includesLead": "Everything in Performance, plus:",
+      "includes": [
+        { "group": "Reviews and access", "items": ["Weekly flexible structured review", "Weekly check-ins, normally 15 to 20 minutes", "Longer telehealth reviews when clinically required", "Clinically appropriate telehealth within reasonable-use limits", "Direct messaging, reply target within 24 hours, 7 days", "First priority booking", "First priority return-to-performance testing"] },
+        { "group": "Monitoring", "items": ["Proactive weekly workload review", "Proactive soreness monitoring", "Proactive recovery monitoring", "Proactive training-status review", "Program changes between reviews", "Formal physical re-testing every 6 weeks", "Monthly written progress report"] },
+        { "group": "Physical preparation", "items": ["Individualised S&C programming", "Strength programming", "Power development", "Speed development", "Conditioning", "Full-season physical preparation", "Training and match schedule planning", "Gym planning around cricket", "Bowling-volume planning"] },
+        { "group": "Your support team", "items": ["Ongoing coach communication", "Ongoing S&C communication", "Ongoing clinician communication", "Coordination across the support team", "Imaging review", "Specialist referral coordination", "Continued involvement after specialist review"] },
+        { "group": "Member rates", "items": ["20% off separate in-person physio services"] }
+      ],
+      "notIncluded": ["Hands-on treatment, which is booked separately at the member rate", "Match-day or tournament attendance", "Travel", "Imaging, specialist and other external medical fees", "Emergency or urgent medical care"],
+      "rules": {
+        "minimum": "3 months, then month to month",
+        "cancel": "30 days' notice after the initial 3 months",
+        "upgrade": "Not applicable",
+        "downgrade": "At the end of the billing period",
+        "pause": "Flexible, with notice"
+      },
+      "cta": { "label": "Apply for Integrated Performance", "track": "membership_integrated_apply", "href": "/cricket-performance/players?tier=integrated#apply", "checkoutUrl": null }
+    }
+  ],
+
+  "pausePolicy": "Pause with notice. Your place is held for pauses of up to 4 weeks. Longer pauses do not guarantee a place if that level is full when you return.",
+
+  "treatment": {
+    "discount": 0.2,
+    "items": [
+      { "name": "Initial consultation", "normal": 180 },
+      { "name": "Review consultation", "normal": 140 },
+      { "name": "Extended consultation", "normal": 180 },
+      { "name": "Sports Injury Screening", "normal": 250 },
+      { "name": "Return to Performance Assessment", "normal": 250 }
+    ],
+    "eligibility": "Performance and Integrated Performance members receive 20% off every service above while their membership is active.",
+    "essentials": "Essentials members receive 20% off telehealth injury triage, Sports Injury Screening and Return to Performance Assessment. There is no routine in-person treatment discount at Essentials.",
+    "terms": "Member rates apply to appointments booked and attended while your membership is active. In-person appointments are at Bridge Road Physiotherapy, 507 Bridge Road, Richmond. Member rates do not combine with junior pricing or any other offer."
+  },
+
+  "junior": {
+    "note": "Junior pricing applies to players under 18 when they join. A parent or guardian completes onboarding and gives consent.",
+    "stacking": "Junior pricing does not stack with treatment discounts. Separate treatment receives the standard member discount only."
+  },
+
+  "freeTool": {
+    "name": "Bowling Workload Tool",
+    "free": ["Basic ball-count logging", "Simple workload trends"],
+    "paidAdds": ["Deeper history", "Soreness monitoring", "Automated alerts", "Player dashboards", "Return-to-bowling functionality", "Clinician oversight, depending on membership"],
+    "cta": { "label": "Start tracking your bowling", "track": "bowling_tool_click" }
+  },
+
+  "clubs": [
+    {
+      "id": "club-core",
+      "name": "Club Core",
+      "tagline": "Monthly oversight of the players most likely to break down.",
+      "price": 5000,
+      "period": "6-month season",
+      "payment": "Paid in six monthly instalments",
+      "squad": 20,
+      "flag": null,
+      "includesLead": null,
+      "includes": [
+        { "group": "Monitoring", "items": ["Squad of up to 20 players", "Bowling Workload Tool for fast bowlers and return-to-play players", "Monitoring dashboard", "Monthly workload and soreness review", "All relevant fast bowlers and return-to-play players covered", "Serious red flags escalated immediately"] },
+        { "group": "Assessment and review", "items": ["Four individual player assessments", "Assessments in person or by telehealth", "Monthly multidisciplinary case review", "Relevant staff included according to cases"] },
+        { "group": "Education and resources", "items": ["Pre-season education session", "Standard rehab library for the whole squad", "Physical preparation library for the whole squad", "End-of-season report"] },
+        { "group": "Member rates", "items": ["20% off additional assessments", "20% off separate in-person treatment for squad members"] }
+      ],
+      "cta": { "label": "Enquire about Club Core", "track": "club_core_enquiry", "href": "/cricket-performance/clubs?package=club-core#enquiry" }
+    },
+    {
+      "id": "club-plus",
+      "name": "Club Plus",
+      "tagline": "Weekly oversight, more assessments and proactive contact.",
+      "price": 6500,
+      "period": "6-month season",
+      "payment": "Paid in six monthly instalments",
+      "squad": 20,
+      "flag": null,
+      "includesLead": "Everything in Club Core, plus:",
+      "includes": [
+        { "group": "Monitoring", "items": ["Weekly workload and soreness review", "All relevant fast bowlers and return-to-play players monitored", "Proactive contact when important issues emerge"] },
+        { "group": "Assessment and review", "items": ["Six individual assessments instead of four", "Six additional scheduled case-review telehealth sessions", "Priority assessment booking"] },
+        { "group": "Education", "items": ["Mid-season education and update session"] }
+      ],
+      "cta": { "label": "Enquire about Club Plus", "track": "club_plus_enquiry", "href": "/cricket-performance/clubs?package=club-plus#enquiry" }
+    }
+  ],
+
+  "clubsNotIncluded": ["Match-day or tournament attendance", "Hands-on treatment, which squad members book separately at the member rate", "Emergency or urgent medical care", "Imaging, specialist and other external medical fees", "Travel", "Players beyond the squad of 20, unless agreed in writing"],
+
+  "compare": {
+    "players": [
+      { "group": "Cost and access", "rows": [
+        { "label": "Price", "values": ["{essentials.monthly}/month", "{performance.monthly}/month", "{integrated.monthly}/month"] },
+        { "label": "Initial assessment", "values": ["No live assessment", "60 minutes", "60 minutes"] },
+        { "label": "Scheduled reviews", "values": ["No", "Monthly", "Weekly"] },
+        { "label": "Telehealth", "values": ["Paid triage, 20% member discount", "Included within defined clinical use", "High-access within reasonable use"] },
+        { "label": "Direct messaging", "values": ["No", "Limited", "Yes"] },
+        { "label": "Priority booking", "values": ["No", "Yes", "Highest"] },
+        { "label": "In-person physio discount", "values": ["No", "20%", "20%"] }
+      ]},
+      { "group": "Monitoring", "rows": [
+        { "label": "Bowling Workload Tool", "values": ["Yes", "Yes", "Yes"] },
+        { "label": "Dashboard", "values": ["Self-monitoring", "Yes", "Yes"] },
+        { "label": "Automated monitoring", "values": ["Yes", "Yes", "Yes"] },
+        { "label": "Workload review", "values": ["Automated only", "Monthly", "Weekly"] }
+      ]},
+      { "group": "Rehab and preparation", "rows": [
+        { "label": "Personalised rehab", "values": ["No", "Yes", "Yes"] },
+        { "label": "Return-to-bowling plan", "values": ["Standard resources only", "Yes", "Yes"] },
+        { "label": "Physical preparation", "values": ["Program library", "General template + individual modifications", "Individual"] },
+        { "label": "Individual S&C", "values": ["No", "No", "Yes"] },
+        { "label": "Video review", "values": ["No", "Yes", "Yes"] },
+        { "label": "Formal testing", "values": ["Paid, 20% discount", "Every 12 weeks", "Every 6 weeks"] }
+      ]},
+      { "group": "Your support team", "rows": [
+        { "label": "Coach / S&C communication", "values": ["No", "Issue-specific", "Ongoing"] },
+        { "label": "Imaging review", "values": ["No", "Yes", "Yes"] },
+        { "label": "Specialist coordination", "values": ["No", "Yes", "Yes"] },
+        { "label": "Written reports", "values": ["No", "Short monthly summary", "Monthly detailed report"] }
+      ]}
+    ],
+    "clubs": [
+      { "group": "Scope", "rows": [
+        { "label": "Season length", "values": ["6 months", "6 months"] },
+        { "label": "Squad size", "values": ["Up to 20", "Up to 20"] },
+        { "label": "Price", "values": ["{club-core.price} per season", "{club-plus.price} per season"] }
+      ]},
+      { "group": "Monitoring", "rows": [
+        { "label": "Fast bowler monitoring", "values": ["Yes", "Yes"] },
+        { "label": "Return-to-play monitoring", "values": ["Yes", "Yes"] },
+        { "label": "Dashboard", "values": ["Yes", "Yes"] },
+        { "label": "Monitoring frequency", "values": ["Monthly", "Weekly"] },
+        { "label": "Red-flag escalation", "values": ["Serious red flags", "Proactive"] }
+      ]},
+      { "group": "Assessment and review", "rows": [
+        { "label": "Included player assessments", "values": ["4", "6"] },
+        { "label": "Monthly case review", "values": ["Yes", "Yes"] },
+        { "label": "Extra case reviews", "values": ["None", "6"] },
+        { "label": "Priority booking", "values": ["Standard", "Priority"] }
+      ]},
+      { "group": "Education and reporting", "rows": [
+        { "label": "Pre-season education", "values": ["Yes", "Yes"] },
+        { "label": "Mid-season education", "values": ["No", "Yes"] },
+        { "label": "Program library", "values": ["Yes", "Yes"] },
+        { "label": "End-of-season report", "values": ["Yes", "Yes"] }
+      ]},
+      { "group": "Member rates", "rows": [
+        { "label": "Extra assessment discount", "values": ["20%", "20%"] },
+        { "label": "Treatment discount", "values": ["20%", "20%"] }
+      ]}
+    ]
+  }
+}

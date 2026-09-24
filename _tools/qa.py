@@ -4,7 +4,9 @@ import os, re, glob, json, html as H
 from collections import defaultdict
 ROOT = ".."
 
-files = sorted(glob.glob(ROOT + "/**/*.html", recursive=True))
+SKIP = ("_partials", "_tools", "docs", "cricket-logo", "node_modules")
+files = sorted(f for f in glob.glob(ROOT + "/**/*.html", recursive=True)
+               if not set(os.path.relpath(f, ROOT).split(os.sep)) & set(SKIP))
 # Map every URL the site is able to serve (cleanUrls, trailingSlash:false)
 served = set()
 for f in files:
