@@ -132,6 +132,26 @@
       "source": "/players",
       "destination": "/cricket-performance/players",
       "permanent": true
+    },
+    {
+      "source": "/professionals",
+      "destination": "/professional-players",
+      "permanent": true
+    },
+    {
+      "source": "/pros",
+      "destination": "/professional-players",
+      "permanent": true
+    },
+    {
+      "source": "/journal",
+      "destination": "/resources",
+      "permanent": true
+    },
+    {
+      "source": "/work-with-me",
+      "destination": "/services",
+      "permanent": true
     }
   ],
   "headers": [

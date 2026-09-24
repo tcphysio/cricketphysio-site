@@ -121,12 +121,14 @@ window.TCP = (function () {
        application_error            Player application failed to send
        club_enquiry_start / _invalid / _complete / _error   Club form, same pattern
        team_enquiry_start / _invalid / _complete / _error   Team form, same pattern
+       pro_enquiry_start / _invalid / _complete / _error    Professional player form, same pattern
+       pro_page_click               Link into /professional-players
+       pro_enquiry_click            "Discuss your situation"
        bowling_tool_click           Any link to the Bowling Workload Tool
        faq_open                     An FAQ answer opened (question)
        scroll_depth                 25, 50, 75, 100 per page view
        article_read                 Article scrolled past 75%
        phone_click / email_click / maps_click / bridgeroad_click
-       theme_toggle                 Light/dark switched (new theme)
 
      Purchase completion happens on the payment provider. When checkout is
      connected, point its success URL at a page that fires purchase_complete.

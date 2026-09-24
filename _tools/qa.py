@@ -27,7 +27,7 @@ for f in files:
     # --- internal links resolve
     for href in set(re.findall(r'href="(/[^"#?]*)(?:[#?][^"]*)?"', s)):
         base = href.rstrip("/") or "/"
-        if base.startswith("/assets") or base.endswith((".css",".js",".xml",".txt",".svg",".png")):
+        if base.startswith("/assets") or base.endswith((".css",".js",".xml",".txt",".svg",".png",".ico",".webmanifest")):
             if not os.path.exists(ROOT + base): problems[rel].append(f"missing asset {base}")
             continue
         if base not in served and base not in REDIRECTS:

@@ -16,7 +16,7 @@ cd _tools && python3 qa.py && python3 lint.py   # must print "no issues found" a
 
 | In the HTML | Edit instead |
 |---|---|
-| `<!-- partial:header -->` / `<!-- partial:footer -->` | `_partials/header.html`, `_partials/footer.html` |
+| `<!-- partial:head -->` / `<!-- partial:header -->` / `<!-- partial:footer -->` | `_partials/head.html`, `_partials/header.html`, `_partials/footer.html` |
 | `<!-- build:NAME -->` blocks | `data/offers.json` |
 | Text of any element with `data-offer="KEY"` | `data/offers.json` |
 | `<!-- build:faq-schema -->` | The visible `.faq` on the same page |
@@ -32,11 +32,15 @@ cd _tools && python3 qa.py && python3 lint.py   # must print "no issues found" a
 
 ## Design rules
 
-- Use the semantic CSS tokens (`--ink`, `--text`, `--link`, `--btn-bg`...), never raw hex in components.
-- One primary button per view. Green is for actions and small accents, never a section background.
-- Type and rules before boxes. Cards only for things being compared (tiers, packages).
-- At most one navy band between the hero and the closing CTA.
-- Test at 390px: no horizontal scroll, H1 in four lines or fewer, primary CTA in the first screen.
+- **Dark only.** No light theme, no toggle, no `prefers-color-scheme` rules. Brief section 9.
+- Use the semantic CSS tokens (`--ink`, `--text`, `--link`, `--surface`...), never raw hex in components.
+- Teal (`--teal`, from the logo) is the only accent. Clay is for ball-seam stitches only.
+- Instrument Serif for H1, H2 and display numerals; Manrope for everything else. One teal italic `<em>` per heading, at most.
+- The logo files in `assets/brand/` are the brand in the header, footer and icons. Never redraw it as text.
+- Thihan is the brand: name, face or byline in the first screen of every page that sells.
+- One primary button per view. Cards for things a visitor chooses between or clicks into.
+- Effects must respect `prefers-reduced-motion` and never hide content without JavaScript. Add new reveal targets to `REVEAL` in `script.js`.
+- Test at 390px: no horizontal scroll, H1 in four lines or fewer, primary CTA in the first screen. Check 820px too.
 
 ## Conventions
 
@@ -44,3 +48,4 @@ cd _tools && python3 qa.py && python3 lint.py   # must print "no issues found" a
 - `data-track="event_name"` on anything worth counting; register new events in `site-config.js` and brief section 33.
 - In-person care is at Bridge Road Physiotherapy. This site has no address of its own and no LocalBusiness schema.
 - Every new third party needs a CSP change in `vercel.json` and a privacy policy line in the same commit.
+- Photos of identifiable players, and team logos, need written consent or permission before launch. Brief section 1.4.

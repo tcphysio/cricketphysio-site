@@ -8,6 +8,7 @@ JavaScript, and still has one source of truth.
 
 What it writes
   1. Shared chrome from _partials/:
+       <!-- partial:head --> ... <!-- /partial:head -->     (icons, fonts, css)
        <!-- partial:header --> ... <!-- /partial:header -->
        <!-- partial:footer --> ... <!-- /partial:footer -->
      aria-current="page" is set on the nav item for the page's section.
@@ -41,11 +42,12 @@ TOOL_URL = "https://bowlingworkload.thecricket.physio"
 
 # Nav sections: the item whose prefix list holds the longest match wins.
 NAV = [
-    ("/cricket-injuries", ["/cricket-injuries"]),
-    ("/bowling", ["/bowling"]),
     ("/services", ["/services", "/telehealth", "/in-person", "/return-to-performance"]),
+    ("/bowling", ["/bowling"]),
+    ("/professional-players", ["/professional-players"]),
     ("/cricket-performance", ["/cricket-performance"]),
     ("/teams", ["/teams", "/cricket-performance/clubs"]),
+    ("/resources", ["/resources", "/cricket-injuries"]),
     ("/about", ["/about"]),
 ]
 
@@ -501,7 +503,7 @@ def process(path):
     text = path.read_text()
     url = page_url(path)
     new = text
-    for name in ("header", "footer"):
+    for name in ("head", "header", "footer"):
         o, c = f"<!-- partial:{name} -->", f"<!-- /partial:{name} -->"
         if o in new:
             new = replace_between(new, o, c, render_partial(name, url))

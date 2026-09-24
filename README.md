@@ -7,6 +7,9 @@ no npm dependencies, no deploy build. Deploys to Vercel as-is.
 positioning, copy, layout or the design system. `CLAUDE.md` summarises the
 rules an agent must follow.
 
+The site is dark only, by the owner's decision. There is no light theme and no
+toggle.
+
 Built to the same pattern as `bridgeroad-site`, deliberately: one person
 maintains both, and two sites that work the same way are half the thing to learn.
 
@@ -17,23 +20,28 @@ index.html                                 home
 cricket-performance/index.html             memberships landing (/cricket-performance)
 cricket-performance/players.html           player memberships, application form
 cricket-performance/clubs.html             club packages, enquiry form
+professional-players.html                  professional and international players, enquiry form
 about.html  services.html  telehealth.html  in-person.html
 return-to-performance.html  teams.html  book.html  contact.html  faq.html
 cricket-injuries/index.html                injury guide hub
 cricket-injuries/*.html                    individual guides
 bowling/index.html                         workload + return to bowling
-resources/index.html                       education hub
+resources/index.html                       The Cricket Physio Journal
 privacy.html terms.html disclaimer.html accessibility.html
 404.html
-api/enquiry.js                             team, player and club form handler (Vercel Function)
+api/enquiry.js                             team, player, club and professional form handler (Vercel Function)
 site-config.js                             business details, UTM, analytics event registry
 style.css  script.js                       design system and behaviour
 data/offers.json                           every membership and club price, inclusion and rule
+_partials/head.html                        icons, manifest, font preloads, stylesheet
 _partials/header.html  _partials/footer.html   shared chrome, written into every page
-_tools/build.py                            writes partials, offer blocks and FAQ schema into HTML
+_tools/build.py                            writes partials, offer blocks, FAQ schema and cache hashes into HTML
 _tools/qa.py  _tools/lint.py               link/heading/metadata QA and copy lint
-assets/fonts/                              self-hosted Archivo and IBM Plex Sans
+assets/fonts/                              self-hosted Instrument Serif and Manrope
+assets/brand/                              logo (reversed for dark), favicons, app icons
+assets/logos/                              organisation logos for the home marquee (permission pending)
 assets/img/                                optimised photography
+favicon.ico  site.webmanifest              browser and home-screen icons
 docs/website-brief.md                      master brief and design-system specification
 vercel.json                                redirects, headers, clean URLs
 .vercelignore                              keeps docs, data, tools and raw logos off the live site
@@ -44,8 +52,8 @@ vercel.json                                redirects, headers, clean URLs
 The HTML files are what Vercel serves. Edit them directly, except for the
 generated regions, which `_tools/build.py` owns:
 
-- Between `<!-- partial:header -->` and `<!-- /partial:header -->` (and footer):
-  edit `_partials/header.html` or `_partials/footer.html` instead.
+- Between `<!-- partial:head -->`, `<!-- partial:header -->` or `<!-- partial:footer -->`
+  and the matching closing marker: edit the file in `_partials/` instead.
 - Between `<!-- build:NAME -->` and `<!-- /build:NAME -->`: edit `data/offers.json`.
 - The text of any element with `data-offer="KEY"`: edit `data/offers.json`.
 - Between `<!-- build:faq-schema -->` markers: edit the visible FAQ on the page.
@@ -93,7 +101,7 @@ Set in the Vercel dashboard, not in the repo:
 
 | Variable | Required | Default |
 |---|---|---|
-| `RESEND_API_KEY` | yes, or the team enquiry form returns 500 | none |
+| `RESEND_API_KEY` | yes, or every form returns 500 | none |
 | `ENQUIRY_TO` | no | `thihan@thecricket.physio` |
 | `ENQUIRY_FROM` | no | `The Cricket Physio <enquiries@thecricket.physio>` |
 

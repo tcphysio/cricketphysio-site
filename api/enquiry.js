@@ -3,6 +3,7 @@
    ----------------------------------------------------------------------------
    Receives the site's three forms and emails each one through Resend:
      team    team and organisation enquiry          (/teams)
+     pro     professional player enquiry            (/professional-players)
      player  player membership application          (/cricket-performance/players)
      club    club and academy package enquiry       (/cricket-performance/clubs)
 
@@ -70,6 +71,17 @@ const FORMS = {
       if (d.guardian_email && !EMAIL.test(d.guardian_email)) return 'Invalid guardian email';
       return null;
     }
+  },
+  pro: {
+    title: 'Professional player enquiry',
+    fields: [
+      ['name', 'Name', 120], ['email', 'Email', 160], ['phone', 'Phone or WhatsApp', 40], ['team', 'Team or contract', 160],
+      ['contact_via', 'Preferred contact', 80], ['manager_ok', 'Manager or agent may be contacted', 3], ['message', 'What is going on', 5000],
+      ['consent', 'Consent to collect health information', 3]
+    ],
+    required: ['name', 'email', 'message', 'consent'],
+    subject: d => 'Professional player enquiry: ' + d.name + (d.team ? ' (' + d.team + ')' : ''),
+    check: d => (d.consent !== 'yes' ? 'Consent not given' : null)
   },
   club: {
     title: 'Club package enquiry',

@@ -4,7 +4,8 @@
    No framework, no dependencies, no build step. Everything degrades: with
    JavaScript off the site is still readable, navigable and bookable, because
    the menu falls back to a visible list, conditional form fields all show,
-   and every call to action is a real link to a real URL.
+   nothing waits on a reveal animation, and every call to action is a real
+   link to a real URL.
 
    Analytics events are named in site-config.js. This file fires the ones
    that need more than a click: form starts and completions, tier card
@@ -15,39 +16,6 @@
   var TCP = window.TCP || {};
   var track = TCP.track || function () {};
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* --- Theme ----------------------------------------------------------- */
-  /* Applied by an inline script in <head> before first paint, so there is
-     no flash. The control lives in the footer: a toggle button whose label
-     stays "Dark theme" and whose pressed state says whether it is on. */
-  var STORE = 'tcp-theme';
-  var root = document.documentElement;
-  function systemTheme() {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-  function currentTheme() { return root.getAttribute('data-theme') || systemTheme(); }
-
-  var toggle = document.querySelector('[data-theme-toggle]');
-  if (toggle) {
-    var paint = function () { toggle.setAttribute('aria-pressed', String(currentTheme() === 'dark')); };
-    paint();
-    toggle.addEventListener('click', function () {
-      var next = currentTheme() === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      try { localStorage.setItem(STORE, next); } catch (e) { /* private mode */ }
-      paint();
-      track('theme_toggle', next);
-    });
-    if (window.matchMedia) {
-      var mq = window.matchMedia('(prefers-color-scheme: dark)');
-      var onChange = function () {
-        var saved = null;
-        try { saved = localStorage.getItem(STORE); } catch (e) {}
-        if (!saved) { root.removeAttribute('data-theme'); paint(); }
-      };
-      if (mq.addEventListener) mq.addEventListener('change', onChange);
-    }
-  }
 
   /* --- Mobile menu ------------------------------------------------------ */
   var menuBtn = document.querySelector('[data-menu-toggle]');
@@ -65,7 +33,7 @@
     });
     nav.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
     if (window.matchMedia) {
-      var wide = window.matchMedia('(min-width: 68.75rem)');
+      var wide = window.matchMedia('(min-width: 75rem)');
       if (wide.addEventListener) wide.addEventListener('change', function (e) { if (e.matches) setMenu(false); });
     }
   }
@@ -80,38 +48,87 @@
     });
   }
 
-  /* --- Scroll: back-to-top, reading progress, scroll depth -------------- */
-  var bar = document.querySelector('[data-progress]');
+  /* --- Scroll: header state, progress bar, back-to-top, depth, parallax -- */
+  var hdr = document.querySelector('.hdr');
+  var bar = document.querySelector('.progress');
   var article = document.querySelector('[data-article]');
+  var parallax = reduceMotion ? [] : Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
   var depthMarks = [25, 50, 75, 100];
   var depthSent = {};
+  var readSent = false;
   var ticking = false;
   function onScroll() {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(function () {
       var y = window.scrollY || document.documentElement.scrollTop;
-      if (top) top.setAttribute('data-show', String(y > 900));
-
-      if (bar && article) {
-        var start = article.offsetTop;
-        var span = article.offsetHeight - window.innerHeight;
-        var pct = span > 0 ? Math.min(1, Math.max(0, (y - start) / span)) : 0;
-        bar.style.width = (pct * 100).toFixed(1) + '%';
-        if (pct > 0.75 && !bar.dataset.counted) { bar.dataset.counted = '1'; track('article_read', location.pathname); }
-      }
-
       var doc = document.documentElement;
       var scrollable = doc.scrollHeight - window.innerHeight;
-      var seen = scrollable > 0 ? Math.round(((y + 1) / scrollable) * 100) : 100;
+      var pct = scrollable > 0 ? Math.min(1, Math.max(0, y / scrollable)) : 0;
+
+      if (hdr) hdr.classList.toggle('is-scrolled', y > 8);
+      if (bar) bar.style.setProperty('--p', pct.toFixed(4));
+      if (top) top.setAttribute('data-show', String(y > 900));
+
+      if (article && !readSent) {
+        var span = article.offsetHeight - window.innerHeight;
+        if (span > 0 && (y - article.offsetTop) / span > 0.75) { readSent = true; track('article_read', location.pathname); }
+      }
+
+      var seen = Math.round(pct * 100);
       depthMarks.forEach(function (m) {
         if (seen >= m && !depthSent[m]) { depthSent[m] = true; track('scroll_depth', String(m)); }
+      });
+
+      /* Parallax: the element drifts against the scroll, a little. */
+      parallax.forEach(function (el) {
+        var r = el.parentElement.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) return;
+        var f = parseFloat(el.getAttribute('data-parallax')) || 0.1;
+        var off = (r.top + r.height / 2 - window.innerHeight / 2) * -f;
+        el.style.transform = 'translate3d(0,' + off.toFixed(1) + 'px,0)';
       });
       ticking = false;
     });
   }
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
   onScroll();
+
+  /* --- Reveal on scroll ------------------------------------------------- */
+  /* Content fades up as it arrives. Anything already on screen when the
+     script runs is left alone, so there is no flicker above the fold. */
+  var REVEAL = '.section-head, .rulecols > *, .paths > li, .topics > li, .journal > li, .tier, main .card, .steps > li,' +
+               ' .scenarios > div, .career, .media, .quote, .compare-wrap, .faq, .versus > div, .lines, .proof li,' +
+               ' .bowling__foot, .imageband__copy, .articles, .pathway, .journey, .continuum, .fitlist, .form, .profile, .taxonomy';
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    var revealIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('is-in'); revealIO.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    document.querySelectorAll(REVEAL).forEach(function (el) {
+      if (el.closest('.hero--home, .hero__grid')) return;
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.92) { el.classList.add('is-in'); return; }
+      var sibs = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
+      el.style.setProperty('--i', String(Math.min(sibs, 6)));
+      el.setAttribute('data-reveal', '');
+      revealIO.observe(el);
+    });
+  } else {
+    document.querySelectorAll('.pathway').forEach(function (el) { el.classList.add('is-in'); });
+  }
+
+  /* --- Spotlight on cards, fine pointers only ---------------------------- */
+  if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
+    document.addEventListener('pointermove', function (e) {
+      var el = e.target.closest ? e.target.closest('.spot') : null;
+      if (!el) return;
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    }, { passive: true });
+  }
 
   /* --- Sticky mobile CTA ------------------------------------------------- */
   /* Shown only while none of the sections that already carry the same call
@@ -174,6 +191,7 @@
   var SUCCESS = {
     player: '<p><strong>Thanks, your application is in.</strong> I read every one myself and reply within two business days with the next step.</p>',
     club: '<p><strong>Thanks, that has sent.</strong> I will be in touch within two business days to set up a short call about your squad.</p>',
+    pro: '<p><strong>Thanks, that has reached me directly.</strong> I reply personally, by the contact method you chose, usually within two business days.</p>',
     team: '<p><strong>Thanks, that has sent.</strong> I answer enquiries myself, usually within two business days.</p>'
   };
   var phoneLink = TCP.clinic ? TCP.clinic.phoneLink : 'tel:+61458007583';

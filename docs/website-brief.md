@@ -1,6 +1,8 @@
 # The Cricket Physio: website brief and implementation specification
 
-**thecricket.physio** · Version 1.0 · 24 September 2026 · Owner: Thihan Chandramohan
+**thecricket.physio** · Version 2.0 · 24 September 2026 · Owner: Thihan Chandramohan
+
+Version 2 made the site dark only, put the logo and brand colours everywhere, moved Thihan to the front, and added a page for professional and international players. Section 1.5 lists every change from version 1. Where a version 1 statement survives below and conflicts with 1.5, section 1.5 wins.
 
 This is the master reference for designing, building, editing and extending the site. Where it conflicts with `cricket-physio-site-map.md` (23 September 2026), this document wins. Section 1.3 lists every conflict and how it was resolved.
 
@@ -8,7 +10,8 @@ This is the master reference for designing, building, editing and extending the 
 
 - Read sections 1, 8, 9, 10, 28 and 38 before touching copy or visuals.
 - Prices, inclusions and membership rules live in `data/offers.json`. Never hand-write a price in HTML. Run `python3 _tools/build.py` after editing it.
-- Shared header and footer live in `_partials/`. The build writes them into every page.
+- Shared head (icons, fonts, stylesheet), header and footer live in `_partials/`. The build writes them into every page.
+- The site is dark only. There is no light theme and no toggle. Do not add one.
 - Before every commit: `python3 _tools/build.py --check`, then `cd _tools && python3 qa.py && python3 lint.py`. All three must pass.
 - Items marked **Decision needed** are not settled. Do not build them as if they were.
 - Labels used throughout: **Fact** (verified in the repo or stated by the owner), **Assumption** (reasonable, unverified), **Opinion** (a recommendation you are free to overrule).
@@ -85,7 +88,7 @@ The website has four jobs, in this order:
 - **Routing by audience type, not by problem.** "Cricketers / Coaches / Physiotherapists" asks visitors to classify themselves. Players think in problems: "my back hurts when I bowl".
 - **Mobile hero ate the screen.** The H1 ran to four lines at 34px serif and the lede to five, pushing the secondary CTA below the fold.
 
-What changed (implemented on this branch):
+What changed in version 1 (colour, type and several layouts were then replaced in version 2, section 1.5):
 
 - Navy hero and bands as structural anchors, warm off-white pages, muted cricket green for actions only.
 - Archivo display type at 92% width with IBM Plex Sans for reading. Self-hosted.
@@ -111,8 +114,10 @@ A cricket physio who has worked in international, domestic, franchise and county
 | Screening | "I do not run injury prediction screening" | Sports Injury Screening sold as baseline testing, never prediction | Keeps the honest stance while selling the product. Copy says plainly that no screen predicts injury. |
 | Fee source of truth | bridgeroad.physio only | Five in-person fees also shown in the member-rate table, from `data/offers.json` | A discount means nothing without the base fee. Those five figures must be kept in step with Bridge Road. |
 | Lumbar bone stress guide | Lives on the Bridge Road blog, linked from here | Moves to thecricket.physio; Bridge Road links here | Cricket content belongs to the cricket brand, and the old map already said "write once on Cricket Physio". One URL gathers the authority instead of two splitting it. |
-| Theme toggle | Header | Footer | Frees the phone header for a persistent Book button. |
-| Hero line | "Keeping cricketers on the park" (planned) | "Cricket injuries, managed the way professional teams manage them." | States who, what and the difference in one line. Credentials sit directly beneath it, as the old map intended. |
+| Theme | Toggle in the header | Dark only, no toggle (version 2) | Owner instruction. One theme to design, measure and photograph for. |
+| Logo | Master logo in the header | Master logo, reversed for dark, in the header, footer, favicon set and app icons (version 2) | Owner instruction. Version 1 had replaced it with a drawn mark; version 2 restores it. |
+| Professional players | A route inside `/teams` | Own page, `/professional-players`, with its own form and nav item (version 2) | Owner instruction to target international professionals. |
+| Hero line | "Keeping cricketers on the park" (planned) | "Cricket injuries need cricket answers." (version 2; version 1 used "Cricket injuries, managed the way professional teams manage them.") | Shorter, cricket-first, and holds up at display size. Thihan's name sits above it and the proof strip follows. |
 
 ### 1.4 Launch gates: decisions needed from Thihan
 
@@ -129,9 +134,59 @@ These block launch of the membership pages, or change what they say. Ranked by r
 9. **Club end-of-season report.** The clubs page says individual clinical detail appears only for consenting players. Confirm that is the practice.
 10. **Privacy review.** Player applications now carry brief health information by email via Resend (a US service). The privacy policy says so. Have it reviewed against the Australian Privacy Principles, especially APP 8 (cross-border disclosure).
 11. **Professional indemnity for overseas telehealth.** Confirm the insurer covers consultations with players outside Australia.
-12. **Photography.** A shoot or an archive pull (section 11). The portrait is in; action and clinical shots are still needed.
-13. **Master logo.** The batter silhouette with gradient and "Get back on the park" conflicts with this brief ("no generic athlete silhouettes", "restrained graphics"). The web uses a simple mark and wordmark. Decide whether to redraw the master logo.
-14. **Reference sites.** The request mentioned example sites you like. They did not come through with the brief. Send the URLs and they get mapped against this system.
+12. **Photo consent: the pitch-side image.** `/professional-players` and the home page show Thihan assessing an identifiable Bangladesh international on the outfield. That is an identifiable player in an injury context, which section 11.3 says needs the player's explicit written consent for that use, plus the Bangladesh Cricket Board's permission for the kit and sponsor marks. The image came from the bridgeroad.physio asset set. Being published there does not settle it here. **Confirm consent in writing, or swap the image before launch.** High risk for a page aimed at professionals, who notice.
+13. **Photo consent: the Italy gym image.** The home and about pages show a player in a loaded trunk exercise in Italy team kit. Confirm the player's consent and the Federazione Cricket Italiana's permission for the kit.
+14. **Organisation logos.** Eight team and governing-body logos appear in the home marquee. Logos are trade marks. Using them to show where Thihan has worked is common, but some bodies prohibit it and none has approved it here. Get written permission from each, or revert to names as text (the version 1 approach, still supported by `.orgs`).
+15. **Photography.** A shoot or an archive pull (section 11). Three photos carry the site today. Action shots of fast bowling and running rehab are still missing.
+16. **Reversed logo.** The master logo was recoloured for dark backgrounds (section 9.1). Confirm the result is acceptable as the brand on dark, or supply an official reversed version.
+17. **Reference sites.** The version 2 reference notes arrived as written analysis (section 1.5). If you have the sites' URLs, send them and they get checked against the build.
+
+### 1.5 Version 2: professional, dark, personal
+
+**Owner direction (Fact), 24 September 2026:**
+
+- Target international and professional players, so the site must read as a professional operation.
+- Dark only, with no light option.
+- Thihan is the brand and should sit front and centre.
+- Brand colours and the logo in every part of the site, including the favicon and header.
+- The feel of the bridgeroad.physio site, at a higher specification, with more effects.
+- Reference notes on eight sites (Rocket Factory, Basketball.Physio, Home Run, Hoops, Physio Fore, Green Golf, Power + Pace, Kinetic), to inform the work rather than dictate it.
+
+**What changed:**
+
+| Area | Version 1 | Version 2 |
+|---|---|---|
+| Theme | Light by default, dark through a footer toggle | Dark only. `color-scheme: dark`; the toggle, its script and the `theme_toggle` event are gone |
+| Colour | Navy, off-white, cricket green | Brand teal `#14ACAA` and grey `#ADA7AC`, sampled from the logo reversed for dark, on near-black with a teal undertone (section 9) |
+| Type | Archivo and IBM Plex Sans | Instrument Serif for display, with teal italic emphasis; Manrope for text and interface (section 10) |
+| Logo | A drawn mark and a text wordmark | The master logo, reversed for dark, in the header, footer, favicons, app icons and `Organization` schema |
+| Thihan | A profile block low on the home page | Name and avatar above the home H1, portrait with a credential card in the hero, a byline on every product page, a pull quote, a career list on `/about`, and the footer name block |
+| Professionals | A route inside `/teams` | `/professional-players`, a home band, a nav item and a dedicated enquiry form (`pro`) |
+| Routing | Problem selector list | "What brings you here?" cards on home; "I need help with…" on `/services` |
+| Rehab idea | Four-phase continuum | Six-stage pathway with a drawn line, on home and `/return-to-performance` |
+| Proof | Organisation names as text | Proof strip with four figures, and organisation logos in a marquee (permission needed, 1.4 item 14) |
+| Resources | Article list | The Cricket Physio Journal, with a topic taxonomy |
+| Motion | Orientation only | Reveals, marquee, pathway line draw, parallax, spotlight hover, animated featured border, scroll progress. All off under reduced motion (section 12) |
+| Photography | One portrait | Portrait, pitch-side assessment and Italy gym images, all WebP with JPEG fallback |
+
+**How the reference notes were used (Opinion, open to overrule):**
+
+| Idea from the notes | Decision | Why |
+|---|---|---|
+| "I need help with…" pathways | Adopted as the `/services` H1 and structure | Players arrive with a problem, not a service name |
+| A six-stage rehab pathway | Adopted on home and `/return-to-performance` | Makes return to performance concrete and ownable |
+| Hero line "Cricket injuries need cricket answers." | Adopted as the home H1 | Short, cricket-first, strong at display size |
+| Proof strip | Adopted: 20+ years, 15+ in elite cricket, 3 international programs, online worldwide | Every figure traces to section 2.3 |
+| "What brings you here?" | Adopted on home | Same logic as the services pathways, shorter |
+| A dominant fast bowling section | Adopted: the largest type on the home page, with a pitch diagram | Fast bowling is the pillar |
+| "Work with me" | Adopted as the nav label for `/services` and a home section eyebrow | First person suits a personal brand |
+| "Experience where it matters" | Adopted as the home experience band, with the pull quote | |
+| A journal with a taxonomy | Adopted on `/resources` | Gives the guides a home with editorial weight |
+| Editorial serif with a clean sans | Adopted | Reads as considered and senior on dark |
+| Photography of real cricket rehab | Adopted with the three images available | Consent gates in 1.4 items 12 and 13 |
+| Wordmark-first identity with the logo in a secondary role | Not adopted | The owner asked for the logo in every part of the site |
+
+**Bridge Road link (Fact):** the dark palette, pill buttons, glass header, grain and generous spacing follow the bridgeroad.physio direction. Colour is where the two sites part: this one takes its teal and grey from its own logo. Two photos and the eight organisation logos come from the bridgeroad.physio asset set.
 
 ---
 
@@ -164,6 +219,8 @@ Each is verifiable. Nothing else gets claimed.
 - AHPRA registration PHY0001614815.
 
 **Decision needed:** confirm the exact role title and years for each organisation before they appear with dates on the About page.
+
+**Check (Assumption to confirm):** the home proof strip and the footer say "15+ years in elite cricket"; `/about` says "more than fifteen in elite sport, most of it in cricket". If part of the fifteen years was outside cricket, change the home and footer wording to "elite sport".
 
 ### 2.4 What the site never claims
 
@@ -206,7 +263,8 @@ Every page has one objective from this table. KPIs need a baseline: run eight we
 | F | Clubs and academies | Secondary | Too many injuries, no medical system | Fixed-price season support without hiring | Club enquiry | `/cricket-performance/clubs` |
 | G | Professional teams and governing bodies | Secondary, highest value per deal | A systems or staffing gap | Relevant roles, systems thinking, how an engagement runs | Team enquiry | LinkedIn → home → `/teams` |
 | H | Physiotherapists and sports medicine clinicians | Secondary | A cricketer on their list | Second-opinion route, clinical resources | Contact, resources | `/resources` |
-| I | Player managers and agents | Secondary | A client with an injury or a contract question | Credibility, discretion, speed | Contact | `/about` |
+| I | Player managers and agents | Secondary | A client with an injury or a contract question | Credibility, discretion, speed | Professional player enquiry | `/professional-players`, `/about` |
+| J | International and professional players (version 2) | Primary for positioning, highest credibility bar | A second opinion, a stalled return, an off-season gap, a tour away from team support | Thihan has been the team physio; input is discreet and works with the team's medical staff | Discuss your situation (`pro` form) | LinkedIn, referral, home band → `/professional-players` |
 
 ---
 
@@ -319,95 +377,82 @@ The weights exist so a report says something useful ("clubs converted, players d
 
 ## 9. Colour system
 
+One theme: dark. There is no light theme and no toggle (section 1.5).
+
 ### 9.1 Brand values
 
-| Token | Hex | RGB | Role |
-|---|---|---|---|
-| `--navy` | `#0C1821` | 12, 24, 33 | Primary dark: hero, bands, footer, headings |
-| `--navy-2` | `#132430` | 19, 36, 48 | Raised surface on navy (selector panel) |
-| `--navy-line` | `#2A3B47` | 42, 59, 71 | Dividers on navy |
-| `--paper` | `#F7F7F4` | 247, 247, 244 | Page background, warm off-white |
-| `--white` | `#FFFFFF` | 255, 255, 255 | Cards, tables, inputs |
-| `--stone` | `#EEEEE8` | 238, 238, 232 | Tinted bands |
-| `--green-700` | `#2F6B4F` | 47, 107, 79 | Cricket accent: buttons, links, eyebrows, ticks |
-| `--green-800` | `#24583F` | 36, 88, 63 | Button hover |
-| `--green-900` | `#1B4633` | 27, 70, 51 | Button pressed |
-| `--green-50` | `#E7EFE9` | 231, 239, 233 | Wash: callouts, featured column |
-| `--green-300` | `#8FC7A8` | 143, 199, 168 | Accent and primary button on navy |
-| `--sand-300` | `#D8C8A0` | 216, 200, 160 | Eyebrows on navy only |
-| `--sand-700` | `#8A6D2F` | 138, 109, 47 | Border of the emergency notice; text on light only if unavoidable |
-
-Text and utility colours:
+The teal and grey are sampled from the master logo after it was reversed for dark backgrounds. The logo's own dark teal and dark grey disappear on near-black, so the reversal lifted their lightness and kept the gradients (Fact: `assets/brand/logo-*.{webp,png}`).
 
 | Token | Hex | Role |
 |---|---|---|
-| `--ink` | `#0C1821` | Headings |
-| `--text` | `#2B3640` | Body text |
-| `--muted` | `#56626B` | Secondary text, labels, metadata |
-| `--line` | `#DCDDD6` | Decorative dividers (not relied on for meaning) |
-| `--line-strong` | `#7D878F` | Input borders, outline button border |
-| `--focus` | `#B5501A` | Focus ring, light backgrounds |
-| `--danger` | `#A3321A` | Form errors |
+| `--teal` | `#14ACAA` | The brand colour: links, eyebrows, italic heading emphasis, ticks, focus of attention |
+| `--teal-bright` | `#3FD0CB` | Hover, glows, the pathway line's leading edge |
+| `--teal-deep` | `#0B6F6D` | Gradient floor, progress bar start |
+| `--grey` | `#ADA7AC` | The logo's "Physio" grey; secondary accents |
+| `--clay` | `#CB7A55` | Leather red for ball-seam stitches only |
+| `--bg` | `#071012` | Page background, near-black with a teal undertone |
+| `--bg-2` | `#0A1618` | Alternate band |
+| `--surface` | `#0F1D20` | Cards, tables, inputs |
+| `--surface-2` | `#142629` | Raised card, hover, stone bands |
+| `--glass` | `rgba(10,22,24,.72)` | Header when scrolled, sticky CTA, credential cards, with backdrop blur |
+
+Text, lines and utility:
+
+| Token | Value | Role |
+|---|---|---|
+| `--ink` | `#F4F1EA` | Headings, warm white |
+| `--text` | `#C4CDCB` | Body |
+| `--muted` | `#8E9C9A` | Labels, metadata |
+| `--line` | `rgba(196,226,223,.10)` | Decorative dividers |
+| `--line-2` | `rgba(196,226,223,.18)` | Card borders |
+| `--line-strong` | `#627C80` | Input borders, secondary button border |
+| `--btn-fg` | `#041012` | Text on the primary button |
+| `--btn-grad` | `#1BB8B4 → #129E9B → #0E8C89` at 135° | Primary button fill |
+| `--focus` | `#F2B35B` | Focus ring, amber so it never matches the brand teal |
+| `--danger` | `#FF8A73` | Form errors |
 
 ### 9.2 Measured contrast (WCAG 2.2)
 
-| Pair | Ratio | Passes |
-|---|---|---|
-| Ink on paper | 16.75:1 | AAA |
-| Text on paper / on white / on stone | 11.48 / 12.32 / 10.58:1 | AAA |
-| Muted on paper / on stone / on white | 5.83 / 5.37 / 6.26:1 | AA |
-| Green on paper / on white / on stone | 5.86 / 6.29 / 5.40:1 | AA |
-| White on green (primary button) | 6.29:1 | AA |
-| White on green hover | 8.26:1 | AAA |
-| Navy on green-300 (primary button on navy) | 9.33:1 | AAA |
-| Paper on navy | 16.75:1 | AAA |
-| Muted-on-navy `#A9B4BA` on navy / on navy-2 | 8.50 / 7.50:1 | AAA |
-| Green-300 on navy / on navy-2 | 9.33 / 8.24:1 | AAA |
-| Sand-300 on navy | 10.86:1 | AAA |
-| Input border on white (non-text) | 3.66:1 | 1.4.11 |
-| Focus ring on paper / on stone (non-text) | 4.74 / 4.37:1 | 1.4.11 |
-| Focus ring on navy `#F2B35B` | 9.74:1 | 1.4.11 |
-| Danger on white | 6.93:1 | AA |
-| Old brand teal `#009996` on white, for reference | 3.50:1 | **Fails** for body text |
+Measured on this branch (Fact). Worst case is `--surface-2`.
 
-### 9.3 Dark theme
+| Foreground | on `--bg` | on `--surface` | on `--surface-2` | Passes |
+|---|---|---|---|---|
+| Ink | 17.05 | 15.30 | 13.90 | AAA |
+| Text | 11.85 | 10.64 | 9.67 | AAA |
+| Muted | 6.75 | 6.06 | 5.51 | AA |
+| Teal (links, eyebrows) | 6.88 | 6.17 | 5.61 | AA |
+| Teal bright | 10.16 | 9.12 | 8.29 | AAA |
+| Grey | 8.15 | 7.31 | 6.65 | AAA |
+| Danger | 8.37 | 7.51 | 6.82 | AAA |
+| Focus ring (non-text) | 10.42 | 9.35 | 8.49 | 1.4.11 |
+| Input border (non-text) | 4.32 | 3.87 | 3.52 | 1.4.11 |
 
-Follows the operating system unless the visitor picks in the footer. Values:
+Button text `#041012` on the gradient: 7.87 at the light end, 4.72 at the dark end. Passes AA at every point.
 
-| Token | Dark value | Measured |
-|---|---|---|
-| `--bg` | `#0B141B` | |
-| `--surface` | `#13202A` | |
-| `--surface-tint` | `#101C25` | |
-| `--ink` | `#F1F3EF` | 16.64:1 on bg |
-| `--text` | `#D5DBDC` | 13.27:1 on bg |
-| `--muted` | `#97A3A9` | 7.19 on bg, 6.41 on surface |
-| `--link`, `--accent`, `--btn-bg` | `#86C2A1` | 9.07 on bg, 8.08 on surface |
-| `--btn-fg` | `#0B141B` | 9.07 on button |
-| `--line-strong` | `#5E6C74` | 3.06 on surface |
-| `--focus` | `#F2B35B` | 10.06 on bg |
-| `--band-dark` | `#060E14` | Navy bands sit darker than the page |
+### 9.3 Light theme
+
+None. Do not add `prefers-color-scheme` rules, a toggle, or light-only images. `<meta name="color-scheme" content="dark">` and `theme-color #071012` sit in `_partials/head.html` so browser chrome, form controls and scrollbars match.
 
 ### 9.4 States
 
 | Element | Default | Hover | Pressed | Focus | Disabled |
 |---|---|---|---|---|---|
-| Primary button (light) | green-700 bg, white text | green-800 | green-900 | 3px `--focus` outline, 2px offset | 55% opacity, not-allowed cursor |
-| Primary button (on navy) | green-300 bg, navy text | `#B0D9C2` | `#79B895` | 3px `#F2B35B` outline | Same |
-| Secondary button | Transparent, ink text, 1.5px line-strong border | Border ink, 5% ink wash | Same as hover | Same | Same |
-| Text link | Green, 1px underline, 0.18em offset | Ink, 2px underline | | Focus ring | |
-| Input | White, 1px line-strong | | | Border green plus focus ring | |
+| Primary button | Teal gradient pill, `--btn-fg` text, soft teal glow | Glow grows, a light sheen sweeps across, lifts 1px | Returns to rest | 2px `--focus` outline, 3px offset | 55% opacity, not-allowed cursor |
+| Secondary button | Transparent pill, ink text, `--line-strong` border | Border teal, faint teal wash | Same as hover | Same | Same |
+| Text link | Teal, 1px underline at 0.2em | Teal bright | | Focus ring | |
+| Input | `--surface`, 1px `--line-strong`, radius 10px | | | Border teal, a faint teal halo, and the amber focus ring | |
 | Input invalid | 2px danger border, "✕" message below | | | | |
-| Nav item current | Ink, 600 weight, 2px green bottom rule (desktop) or 3px left rule (mobile menu) | | | | |
+| Nav item current | Ink with a teal underline (desktop); teal text (menu) | | | | |
+| Spotlight card | `--surface`, `--line-2` border | A teal radial light follows the pointer; border brightens | | Focus ring on the card link | |
 
 ### 9.5 Rules
 
-- Green is for actions and small accents: buttons, links, ticks, eyebrows, one featured border. **Never a section background.**
-- Sand appears on navy only, for eyebrows, plus the emergency notice border. Nowhere else.
-- At most one navy band between the hero and the closing CTA band on any page.
-- No gradients. No neon. No glow.
-- Nothing is communicated by colour alone: featured tier has a text label and a thicker border; comparison "Yes" has a tick and the word; errors have a symbol, text and a thicker border.
-- The old teal survives only inside the master logo files in `cricket-logo/`, which are not served (see 1.4 item 13).
+- Teal is the only accent. It marks links, eyebrows, italic emphasis in headings, ticks, the pathway line and one featured border per page.
+- Clay appears only as ball-seam stitches. Never text, never a button.
+- Glows are radial, low opacity, and sit behind content. No neon text, no glowing body copy.
+- Gradients are allowed on the primary button, the progress bar, the pathway line, featured borders and proof numerals. Nowhere else.
+- Nothing is communicated by colour alone: featured tier has a text label; comparison "Yes" has a tick and the word; errors have a symbol, text and a thicker border.
+- The original logo files in `cricket-logo/` are not served. The web versions live in `assets/brand/`.
 
 ---
 
@@ -415,39 +460,40 @@ Follows the operating system unless the visitor picks in the footer. Values:
 
 ### 10.1 Families
 
-- **Display: Archivo** (SIL OFL). Weights 600 and 700, width axis used at 92%. Semi-condensed grotesque: confident, sporting, not shouty. Keeps a phone H1 to three or four lines.
-- **Text: IBM Plex Sans** (SIL OFL). Weights 400, 500, 600 and 400 italic. Technical, clinical, easy to read at length.
-- Two families only. No serif. No third face for "data": use Plex Sans with tabular figures.
+- **Display: Instrument Serif** (SIL OFL), regular and italic. A condensed editorial serif. It gives H1 and H2 the weight of a quality magazine rather than a clinic brochure, and holds up at 88px on dark.
+- **Text and interface: Manrope** (SIL OFL), variable 400 to 700. Clean, slightly geometric, legible at small sizes on dark.
+- Two families only. H3 and below are Manrope bold, so card titles and form labels stay crisp.
+- An `<em>` inside an H1 or H2 turns italic and teal. Use it once per heading, on the word that carries the meaning ("cricket answers", "scales", "professional").
 
-Self-hosted from `/assets/fonts/`, latin subset, variable axes trimmed to the ranges used (Archivo 90 KB → 37 KB, Plex 46 KB → 35 KB). Two files preloaded (72 KB). `font-display: swap`. Fallbacks: Archivo → "Arial Narrow" → system-ui; Plex → system-ui.
+Self-hosted from `/assets/fonts/`, latin subset. Manrope 22.7 KB, Instrument Serif 20.5 KB, italic 21.6 KB. Manrope and Instrument Serif regular are preloaded from `_partials/head.html`. `font-display: swap`. Fallbacks: Instrument Serif → "Iowan Old Style" → Georgia; Manrope → system-ui.
 
 ### 10.2 Scale
 
-Fluid sizes use `clamp()` between the mobile and desktop values. Mobile is 390px wide, desktop 1440px.
+Fluid sizes use `clamp()` between mobile (390px) and desktop (1440px).
 
-| Style | Family, weight, width | Desktop | Mobile | Line height | Letter spacing | Max width |
-|---|---|---|---|---|---|---|
-| H1 | Archivo 700, 92% | 56px | 34px | 1.06 | −0.022em | 21ch |
-| H2 | Archivo 700, 92% | 40px | 28px | 1.12 | −0.016em | Section head 46rem |
-| H3 | Archivo 600, 100% | 22px | 20px | 1.25 | −0.008em | Column |
-| H4 | Plex Sans 600 | 17px | 17px | 1.35 | 0 | Column |
-| Lede | Plex Sans 400 | 21px | 18px | 1.5 | 0 | 40rem |
-| Body | Plex Sans 400 | 18px | 17px | 1.65 | 0 | 42rem (about 70 characters) |
-| Small | Plex Sans 400 | 15px | 15px | 1.5 | 0 | |
-| Caption, meta | Plex Sans 400 | 14px | 14px | 1.45 | 0 | |
-| Nav | Plex Sans 500 | 15px | 17px in menu | 1.3 | 0 | |
-| Button | Plex Sans 600 | 16px (small 15px) | same | 1.25 | 0 | |
-| Eyebrow, data label, table group | Plex Sans 600, uppercase | 12.5px | 12.5px | 1.4 | 0.09em | |
-| Price | Archivo 700, 92%, tabular | 40px | 40px | 1 | −0.02em | |
-| Step number | Archivo 700, 92%, tabular | 24px | 24px | 1 | 0 | |
-| Stacked lines (`.lines`) | Archivo 600, 92% | 24px | 20px | 1.3 | 0 | |
+| Style | Family, weight | Desktop | Mobile | Line height | Notes |
+|---|---|---|---|---|---|
+| H1 | Instrument Serif 400 | 88px | 44px | 0.98 | Max 16ch, `text-wrap: balance`, −0.012em |
+| H2 | Instrument Serif 400 | 60px | 36px | 1.02 | |
+| Fast bowling title | Instrument Serif 400 | 128px | 60px | 0.88 | Home only |
+| H3 | Manrope 700 | 21px | 18px | 1.3 | |
+| H4 | Manrope 700 | 16px | 16px | 1.4 | |
+| Lede | Manrope 400 | 21px | 18px | 1.6 | Max 38rem |
+| Body | Manrope 400 | 18px | 17px | 1.7 | Max 42rem |
+| Eyebrow | Manrope 700, uppercase, 0.16em tracking | 12px | 12px | 1.4 | Teal, with a short gradient rule before it |
+| Tag, card label | Manrope 700, uppercase, 0.14em tracking | 11px | 11px | 1.4 | Journal tags, credential card labels |
+| Proof numeral | Instrument Serif 400 | 52px | 36px | 1 | Ink-to-teal gradient fill |
+| Pull quote | Instrument Serif italic | 40px | 26px | 1.15 | |
+| Card title (paths, journal) | Instrument Serif 400 | 34px | 28px | 1.05 | |
+| Button | Manrope 700 | 15.6px | same | 1.2 | Pill, min height 52px |
+| Price | Instrument Serif 400, tabular | 56px | 56px | 1 | |
 
 ### 10.3 Rules
 
 - Headings use `text-wrap: balance`.
-- No italics for emphasis. Italic is reserved for the tier "in short" quotes.
-- Uppercase only for eyebrows, labels and table group headers, always tracked at 0.09em.
-- Never set body copy below 15px. Never set any text below 14px.
+- Italic is for the teal emphasis word in H1 and H2, pull quotes, and the tier "in short" lines. Not for emphasis in body copy.
+- Uppercase only for eyebrows, labels and table group headers.
+- Never set body copy below 15px. Only bold uppercase labels (eyebrows, tags, card labels) go below 13px, with a floor of 11px.
 - Mobile H1 must fit in four lines at 390px. If it does not, shorten the H1.
 
 ---
@@ -463,9 +509,14 @@ Fluid sizes use `clamp()` between the mobile and desktop values. Mobile is 390px
 
 ### 11.2 Current state (Fact)
 
-One portrait: Thihan at a cricket ground in Federazione Cricket Italiana staff kit, 900 × 1124, supplied 24 September 2026. It fills shot 10 below. It is used at 240 × 300 on the homepage profile block and as the `Person` schema image (`assets/img/thihan-portrait-{320,480,720}.{webp,jpg}`, 4:5). The older studio headshot in Hampshire kit (`cricket-logo/`) is retired from the site.
+| Image | Source | Used on | Files | Consent status |
+|---|---|---|---|---|
+| Portrait: Thihan at a ground in FCRI kit | Supplied by Thihan, 24 September 2026 | Home hero, `/about` hero, bylines and avatars, `Person` schema | `thihan-portrait-{320,480,720,880}.{webp,jpg}`, 4:5 | Own image. FCRI crest on the kit: 1.4 item 13 |
+| Pitch-side: Thihan assessing a Bangladesh player's knee on the outfield | bridgeroad.physio asset set | `/professional-players` hero, home professionals band | `international-pitchside-{640,900}.{webp,jpg}` | **Identifiable player in an injury context. Written consent needed: 1.4 item 12** |
+| Gym: Thihan coaching a loaded trunk exercise, Italy kit | bridgeroad.physio asset set | Home and `/about` image bands | `rehab-italy-gym-{640,1000}.{webp,jpg}` | Player and FCRI permission: 1.4 item 13 |
+| Organisation logos (8) | bridgeroad.physio asset set | Home marquee | `assets/logos/*.webp` on white chips | Trade mark permission: 1.4 item 14 |
 
-The FCRI crest is visible on the kit. **Decision needed:** confirm the federation is comfortable with its crest on a commercial site (section 11.3 consent rule).
+The older studio headshot in Hampshire kit (`cricket-logo/`) stays retired.
 
 ### 11.3 Shot list, in priority order
 
@@ -497,13 +548,15 @@ The FCRI crest is visible on the kit. **Decision needed:** confirm the federatio
 - Always set `width` and `height` to prevent layout shift.
 - `loading="lazy"` for anything below the first screen; `fetchpriority="high"` and no lazy loading for a hero image.
 - Weight budget: hero 180 KB at 1440w WebP; inline images 120 KB; profile 30 KB.
-- Radius 8px on inline images; none on full-bleed.
+- Radius 20px on inline images and hero portraits; none on full-bleed bands.
 - Alt text describes what the image shows and why it is there ("Fast bowler in the delivery stride at training, filmed side-on"). Decorative images get `alt=""`.
-- Text over a photo only on a navy scrim of at least 60% opacity, and the contrast is re-measured.
+- Text over a photo only on a dark gradient scrim of at least 90% opacity where the text sits (`.imageband::after`), and the contrast is re-measured.
 
 ### 11.5 Diagrams and graphics
 
-Allowed only when they explain: the return-to-performance continuum, the return-to-bowling progression, the membership journey, a workload chart. Charts with illustrative data are labelled "Example". No anatomy models, no generic athlete silhouettes, no icons for decoration, no funnel graphics.
+Allowed when they explain: the return-to-performance pathway, the return-to-bowling progression, the membership journey, a workload chart. Charts with illustrative data are labelled "Example". No anatomy models, no generic athlete silhouettes, no funnel graphics.
+
+Version 2 adds three cricket line graphics, all decorative, `aria-hidden`, drawn in teal at low opacity: the pitch diagram behind the fast bowling section, the crease lines behind text-only heroes on desktop, and the ball-seam divider (teal line with clay stitches) between some sections. They carry texture, not information. Keep them to one per screen.
 
 ### 11.6 Video
 
@@ -514,13 +567,13 @@ No autoplay hero video. Short clips (under 30 seconds) for exercise demonstratio
 ## 12. Design principles
 
 1. **Every element earns its place.** Test: remove it. If nothing is lost, it stays removed.
-2. **Type and space before boxes.** Rules and whitespace create hierarchy. Cards only where items are compared or chosen between: tiers, packages. Not for lists of links.
+2. **Type and space first, cards where they earn it.** Big serif headings and space set hierarchy. Cards are for things a visitor chooses between or clicks into: pathways, tiers, packages, journal entries. Lists of facts stay as rules.
 3. **One primary action per view.** One primary button per screen-height. Everything else is secondary or a text link.
-4. **Navy anchors; it does not decorate.** Hero, at most one mid-page band, closing CTA, footer.
+4. **Thihan is the brand.** Thihan's name, face or byline appears in the first screen of every page that sells. Proof comes from roles, programs and numbers, never from testimonials.
 5. **Say the limit.** Every service and tier states what it does not include.
 6. **Evidence is visible.** Reviewed dates, references, "what we do not know".
 7. **Phones first.** Every component is designed at 390px, then widened.
-8. **Motion only for orientation.** Small hover shifts on arrows, the sticky CTA slide. No entrance animations, no parallax, no counters.
+8. **Motion with restraint.** Effects add polish, never block reading: content fades up once as it enters, the pathway line draws, the marquee drifts, image bands shift slightly on scroll, cards light up under the pointer. No counters, no autoplay video, no scroll-jacking. Everything above the fold is visible on load. Under `prefers-reduced-motion` every effect stops and nothing is hidden.
 
 ---
 
@@ -532,10 +585,10 @@ Status key: **Live** (unchanged), **Rebuilt** (this branch), **New** (this branc
 
 ```
 /                                        Home                                         Rebuilt
-/services                                Consultations hub and problem map            Live → P2 rebuild
+/services                                "I need help with…" pathways                 Rebuilt (v2)
   /telehealth                            Telehealth consultations                     Live → P2 refresh
   /in-person                             In person, Melbourne (at Bridge Road)        Live
-  /return-to-performance                 RTP pillar and the RTP Assessment            Live → P2 rebuild
+  /return-to-performance                 RTP pillar and the RTP Assessment            Live, six-stage pathway added (v2); P2 rebuild
   /screening                             Sports Injury Screening (baseline testing)   P2 new
 /cricket-performance                     Memberships landing                          New
   /cricket-performance/players           Player memberships and application           New
@@ -554,12 +607,13 @@ Status key: **Live** (unchanged), **Rebuilt** (this branch), **New** (this branc
   /cricket-injuries/throwing-shoulder                                                 Live
   /cricket-injuries/bowling-shoulder                                                  P4
   /cricket-injuries/ankle-fast-bowlers                                                P4
+/professional-players                    Professional and international players       New (v2)
 /teams                                   Organisations and consulting                 Live → P2 rebuild
-/resources                               Education hub                                Live → P4 rebuild
+/resources                               The Cricket Physio Journal                   Rebuilt (v2); P4 additions
   /resources/clinicians                  For physios and sports medicine staff        P4
   /resources/coaches                     For coaches and S&C                          P4
   /speaking                              Speaking and media                           P4
-/about                                                                                Live → P2 refresh
+/about                                                                                Rebuilt (v2)
 /book                                    Booking router                               Live
 /contact                                                                              Live
 /faq                                                                                  Live
@@ -596,26 +650,28 @@ Subdomains:
 
 ### 14.1 Primary navigation (built)
 
-Desktop, 1100px and wider:
+Desktop, 1200px (75rem) and wider:
 
-`The Cricket Physio` · Injuries · Fast bowling · Consultations · Memberships · Clubs & teams · About · **[Book a consultation]**
+`[logo]` · Work with me · Fast bowling · Professionals · Memberships · Teams · Journal · About · **[Book a consultation]**
 
-Below 1100px: brand, a compact **[Book]** button that is always visible, and a menu button. The menu panel lists the same six links and the full "Book a consultation" button.
+Below 1200px: logo, a compact **[Book]** button that is always visible, and a menu button. The menu panel lists the same seven links and the full "Book a consultation" button.
 
-- Six text items maximum. No dropdowns (Opinion: dropdowns hide products, and six items fit).
-- `aria-current="page"` is set by `_tools/build.py` from the `NAV` table: the longest matching URL prefix wins. `/telehealth`, `/in-person` and `/return-to-performance` mark "Consultations"; `/cricket-performance/clubs` marks "Clubs & teams".
+- The logo is the master logo reversed for dark, 58px tall, 48px once the page scrolls, 46px on phones and 40px at 368px and below.
+- Seven text items. No dropdowns.
+- The header is glass: translucent near-black with backdrop blur, gaining a border once scrolled. A 2px teal progress bar runs along the top of the window.
+- `aria-current="page"` is set by `_tools/build.py` from the `NAV` table: the longest matching URL prefix wins. `/telehealth`, `/in-person` and `/return-to-performance` mark "Work with me"; `/cricket-performance/clubs` marks "Teams"; `/cricket-injuries/*` marks "Journal".
 - Changing a nav label means editing `_partials/header.html`, the `NAV` table in `build.py`, and this section.
 
 ### 14.2 Footer (built)
 
-Navy. Brand line and a Book button, then four columns:
+Logo, then Thihan's name with a one-line description and a Book button. Four columns:
 
-- **Players:** Consultations, Telehealth, In person Melbourne, Return to performance, Player memberships.
-- **Fast bowling and injuries:** Fast bowling and workload, Bowling Workload Tool, Fast bowling back pain, Hamstring injuries, Throwing shoulder, All injury guides.
-- **Clubs and organisations:** Club and academy packages, Consulting for teams and programs, Resources for coaches and clinicians.
-- **The Cricket Physio:** About Thihan, Common questions, Contact.
+- **Work with me:** Consultations, Online consultations, In person Melbourne, Return to performance, Professional players.
+- **Fast bowling:** Fast bowling and workload, Bowling Workload Tool, Back pain in fast bowlers, Hamstring injuries, Throwing shoulder.
+- **Ongoing support:** Player memberships, Club and academy packages, Teams and organisations.
+- **The Cricket Physio:** About Thihan, The Journal, Common questions, Contact.
 
-Legal strip: AHPRA number, the Bridge Road sentence, the general-information disclaimer with "In an emergency, call 000", policy links, and the theme toggle.
+Legal strip: AHPRA number, the Bridge Road sentence, the general-information disclaimer with "In an emergency, call 000", policy links, and LinkedIn and Instagram icon links.
 
 ### 14.3 Other navigation
 
@@ -627,40 +683,42 @@ Legal strip: AHPRA number, the Bridge Road sentence, the general-information dis
 
 ## 15. Homepage specification
 
-### 15.1 Assessment of the proposed 12-section structure
+### 15.1 Structure decisions
 
-| Proposed | Decision | Why |
+| Proposed (original brief) | Version 2 decision | Why |
 |---|---|---|
-| 1. Hero | Kept, with the problem selector inside it | Answers "who is this for" and "what next" in the first screen |
-| 2. Clear service pathway | Merged into the selector and section 6 | Routing by problem beats routing by service name |
-| 3. Who this is for | Merged into the selector | The selector's wording names the audiences by their problems |
-| 4. Common injuries | Merged into the selector, fast bowler band and guides list | The old six-card grid duplicated the injury hub |
-| 5. Fast bowler section | Kept, as the one mid-page navy band | Fast bowling is the authority pillar |
-| 6. How treatment works | Kept as "What happens when you book" | Removes the main booking anxiety |
-| 7. Return-to-performance philosophy | Kept, early, as the continuum | The brand's defining idea |
-| 8. Experience / authority | Split: organisation strip under the hero, profile block lower down | Proof early, person later |
-| 9. Resources | Kept as three guides with review dates | Shows evidence and recency |
-| 10. Club/team services | One column in "Three ways in" | Clubs have their own page |
-| 11. Testimonials or proof | Dropped | Ahpra. The strip and profile carry the proof |
+| 1. Hero | Kept. Thihan's name and avatar above the H1, portrait with a credential card beside it, proof strip beneath | The person is the brand; proof before argument |
+| 2. Clear service pathway | "What brings you here?" (six cards) and "Four ways in" | Route by problem first, delivery second |
+| 3. Who this is for | Inside "What brings you here?" | Each card names an audience by its problem |
+| 4. Common injuries | Inside the cards, the fast bowling section and the Journal | No separate injury grid |
+| 5. Fast bowler section | Kept, as the largest type on the page | The authority pillar |
+| 6. How treatment works | Moved to `/services` ("What an assessment involves") | Home stays short enough to scan |
+| 7. Return-to-performance philosophy | Kept, early, as the six-stage pathway | The defining idea |
+| 8. Experience / authority | Logo marquee under the hero; "Experience where it matters" band lower down | Proof early, the person's story later |
+| 9. Resources | Kept as three Journal cards | Evidence and recency |
+| 10. Club/team services | One card in each of the two routing sections | Clubs have their own page |
+| 11. Testimonials or proof | No testimonials (Ahpra). Proof strip, logos, career list, pull quote | |
 | 12. Final CTA | Kept | |
-| (old) FAQ | Removed from home | Lives on `/faq` and the product pages |
+| (new) Professional players | A dark band linking to `/professional-players` | Owner direction, version 2 |
 
 ### 15.2 Section by section (built)
 
-| # | Section | Purpose | Heading | Supporting message | CTA | Design | Mobile |
-|---|---|---|---|---|---|---|---|
-| 1 | Hero | Who, what, why different, what next | "Cricket injuries, managed the way professional teams manage them." | Assessment, rehab, bowling workload and return to performance, from a physio with 15 years in elite cricket. In Melbourne or by telehealth. Credentials: 20+ years in physiotherapy, 15+ years in elite cricket. | Primary: Book a consultation. Secondary: Ongoing support | Navy. Text left (7 columns), problem selector right (5 columns) on a navy-2 panel | Stacks: eyebrow, H1 (4 lines), lede, full-width buttons, credentials, then the selector. Primary CTA visible in the first 844px |
-| 2 | Problem selector | Route by the player's own words | "Start with what is going on" | Eight rows: I have hurt myself; My back hurts when I bowl; I have a lumbar stress injury; I am returning from injury; I keep breaking down; I am increasing my bowling; I want a second opinion, or I am not in Melbourne; My club needs medical or workload support | Each row is a link (`problem_select`) | Rule-separated list, arrow at the right, 48px rows | Full width, same rows |
-| 3 | Organisation strip | Proof before argument | "Where the experience comes from" | Eight organisation names as text | None | White band, tight padding, names in Archivo 600 | Names wrap into rows |
-| 4 | Return to performance | The defining idea | "Pain-free is a checkpoint, not the finish line." | Most reinjuries happen to players who felt ready. The four-phase continuum, with the source cited | Text link: How return to performance works | Paper. Continuum: four columns on a rule, stage chips beneath | Vertical timeline with a left rule |
-| 5 | Fast bowlers | The authority pillar | "Fast bowlers get hurt differently. They need managing differently." | Lumbar bone stress, side strains, hamstrings, shoulders and ankles; workload read in context; three linked guides | Primary: Start tracking your bowling (free) | The one mid-page navy band. Split: heading left, content right | Stacks; guide list becomes rows |
-| 6 | Three ways in | Service pathway | "Three ways in" | One consultation / Ongoing support (from $79 a month) / Clubs and organisations | Text links per column | Rule columns, 2px ink top rule, no boxes | Stacks |
-| 7 | What happens when you book | Remove booking anxiety; show collaboration | "What happens when you book" | Before, Assessment, A written plan, Your team (with consent, I talk to your coach, S&C or physio). In Melbourne / everywhere else | Inline links to `/in-person` and `/telehealth` | Stone band, numbered steps with rules | Steps stack; numbers stay |
-| 8 | Profile | Why trust Thihan | "Thihan Chandramohan" | Role line; pattern-recognition paragraph; "Not the same budget. The same thinking."; four facts | Text link: How I work | Paper. 4:5 portrait at 240 × 300 left, text right | Portrait above text |
-| 9 | Guides | Evidence and recency | "Read before you book" | Three guides with category and reviewed date | Text link: All injury guides | Stone band, article rows | Rows stack category, title, description, date |
-| 10 | Closing CTA | One more chance to act | "Bring the injury, the schedule and what you are trying to get back to." | We will work out what is realistic and what has to happen first. | Primary: Book a consultation. Secondary: Ask a question first | Navy CTA band | Full-width buttons |
+| # | Section | Heading | Supporting message | CTA | Design | Mobile |
+|---|---|---|---|---|---|---|
+| 1 | Hero | "Cricket injuries need *cricket* answers." | "I'm Thihan Chandramohan. For more than fifteen years I've managed injuries, rehabilitation and bowling loads inside international, county, state and franchise cricket…" | Primary: Book a consultation. Secondary: How I work | Name and avatar above the H1. Portrait (4:5) on the right with an offset teal frame and a glass credential card ("Currently: Head of Sports Science and Sports Medicine, Federazione Cricket Italiana"). Teal glow behind. Copy rises in on load | Stacks: name, H1, lede, full-width buttons, then the portrait as a square. At 768 to 1023px the portrait runs full width in a 3:2 crop |
+| 2 | Proof strip | None (figures) | 20+ years in physiotherapy; 15+ years in elite cricket; 3 international programs: Sri Lanka, Bangladesh, Italy; Online worldwide, and in person in Melbourne | None | Four serif numerals with a gradient fill, divided by hairlines | 2 × 2 |
+| 3 | Logo marquee | "Selected professional experience" | Eight organisation logos | None | White chips drifting left in a loop; pauses on hover; duplicates hidden from screen readers | Same, slower |
+| 4 | What brings you here? | "What brings you here?" | Six cards: I'm injured / I'm returning to cricket / I'm a fast bowler / I want a second opinion / I'm a professional player / I'm a club or team | Each card is a link (`problem_select`) | Spotlight cards, numbered 01 to 06 in italic serif, three across | One column |
+| 5 | Pathway | "From injury to performance" | "Pain-free is a checkpoint, not the finish line." Six stages: Settle and understand, Rebuild capacity, Reintroduce cricket, Return to bowling, Return to training, Return to performance | Text link to `/return-to-performance` | A teal line draws across the six stages as the section enters | Vertical, line on the left |
+| 6 | Image band | "The work happens between the treatment room and getting selected again." | Clinic, gym, running, throwing, nets, bowling, training, competition | None | Italy gym photo, full bleed, slight parallax, heavy dark scrim under the text | Photo above, text below |
+| 7 | Fast bowling | "Fast bowling" | Workload read in context; intensity, gaps, growth, sleep, travel and previous injury change what the same overs do; three guide links | Primary: Start tracking your bowling | Title at up to 128px with a pitch diagram behind | Stacks |
+| 8 | Professional players | "Discreet, fast, and on your team's side." | Worked inside international and franchise medical teams | For professional players (`pro_page_click`) | Dark band with the pitch-side photo | Stacks |
+| 9 | Four ways in | "Four ways in" | Bridge Road, Richmond / Online consultation / Ongoing support (from $79) / Teams and organisations | Card links | Spotlight cards, four across | One column |
+| 10 | Experience | Eyebrow "Experience where it matters" | Pull quote with avatar ("Years inside professional teams do not make a hamstring heal faster…"); career list by level | More about me | Split: quote left, career list right | Stacks |
+| 11 | Journal | "The Cricket Physio Journal" | Three guides with tag and reviewed date | Card links; All articles | Journal cards | One column |
+| 12 | Closing CTA | "Not sure where to start?" | "Describe the problem and I'll tell you honestly whether it needs an examination, a video call, or neither." | Primary: Book a consultation. Secondary: Ask a question | CTA band with glow | Full-width buttons |
 
-**Photo slots when photography exists (P4):** add a 3:1 full-bleed image of shot 1 between sections 4 and 5, no text on it. (Shot 10 is already in the profile block.)
+The hero portrait is preloaded with `imagesrcset`, so it paints with the text.
 
 ---
 
@@ -673,7 +731,7 @@ Every page: one audience focus, one business purpose, one primary action. "Built
 - **Audience:** players considering ongoing support; clubs arriving from the nav.
 - **Purpose:** introduce ongoing support and route to a tier, clubs or the free tool.
 - **Primary action:** Find the right level of support (to `#levels`). Low-commitment: Try the Bowling Workload Tool.
-- **Sections:** navy hero with credibility line → "Most cricketers only see a physio after something hurts" with the stacked lines → "More oversight at each level, not more appointments" journey (Free, Essentials, Performance, Integrated) → compact tier cards → club band (navy) → free tool → "Not sure which level fits?" closing band.
+- **Sections:** dark hero with credibility line and byline → "Most cricketers only see a physio after something hurts" with the stacked lines → "More oversight at each level, not more appointments" journey (Free, Essentials, Performance, Integrated) → compact tier cards → club band (navy) → free tool → "Not sure which level fits?" closing band.
 - **Sticky mobile CTA:** "Memberships, from $79 a month" / Find your level.
 
 ### 16.2 Player memberships, `/cricket-performance/players` (built)
@@ -681,7 +739,7 @@ Every page: one audience focus, one business purpose, one primary action. "Built
 - **Audience:** players ready to compare and apply.
 - **Purpose:** full detail, prices, inclusions, exclusions, rules, consent, application.
 - **Primary action:** the tier CTA (Join Essentials / Join Performance / Apply for Integrated Performance), all landing on `#apply` with the tier preselected until checkout exists.
-- **Sections, in order:** compact navy hero → who this is for (by level, by role) → where this fits (six scenarios with the usual starting tier) → how this differs from booking when it hurts → three full tier cards → comparison table (21 rows in four groups) → workload monitoring ("spreadsheet archaeology") → testing ("Measure progress, not just pain.") → when something goes wrong → when nothing is wrong → Melbourne or anywhere else → pricing details (member rates, junior pricing, rules, reasonable use, not an emergency service) → who sees your information → application form → FAQ (13) → closing band.
+- **Sections, in order:** compact dark hero with byline → who this is for (by level, by role) → where this fits (six scenarios with the usual starting tier) → how this differs from booking when it hurts → three full tier cards → comparison table (21 rows in four groups) → workload monitoring ("spreadsheet archaeology") → testing ("Measure progress, not just pain.") → when something goes wrong → when nothing is wrong → Melbourne or anywhere else → pricing details (member rates, junior pricing, rules, reasonable use, not an emergency service) → who sees your information → application form → FAQ (13) → closing band.
 - **Sticky mobile CTA:** "Player memberships, from $79 a month" / Choose a membership.
 
 ### 16.3 Club packages, `/cricket-performance/clubs` (built)
@@ -689,15 +747,17 @@ Every page: one audience focus, one business purpose, one primary action. "Built
 - **Audience:** club presidents, coaches, academy managers.
 - **Purpose:** sell Club Core and Club Plus.
 - **Primary action:** Discuss club support (to the enquiry form). Package cards: Enquire about Club Core / Club Plus, with the package preselected.
-- **Sections:** navy hero → what usually goes wrong at club level → how it runs through a season (four steps) → packages → comparison → who sees what (consent) → not included / payment and scope → enquiry with the four-step lead flow → FAQ (6) → closing band "Give your players a clearer medical and workload system."
+- **Sections:** dark hero with byline → what usually goes wrong at club level → how it runs through a season (four steps) → packages → comparison → who sees what (consent) → not included / payment and scope → enquiry with the four-step lead flow → FAQ (6) → closing band "Give your players a clearer medical and workload system."
 - **Monthly arithmetic** ($833.33) is deliberately not shown.
 
-### 16.4 Consultations hub, `/services` (P2 rebuild)
+### 16.4 Work with me, `/services` (rebuilt, version 2)
 
-- **Audience:** injured players and parents.
-- **Purpose:** map problems to the right appointment.
+- **Audience:** injured players, parents, professionals, clubs.
+- **Purpose:** route a problem to the right way of working together.
 - **Primary action:** Book a consultation.
-- **Structure:** H1 "Cricket physio consultations" → problem-to-service map (section 17.1) as a selector → the four one-off services as rule columns (telehealth, in person, RTP Assessment, Sports Injury Screening) with durations and fees → what an assessment involves (keep the current copy) → ongoing support band linking to memberships → "What this is not" (keep) → closing CTA.
+- **Title:** "Work With Me: Cricket Physio Consultations | The Cricket Physio". **H1:** "I need help *with*…"
+- **Structure:** hero with crease graphic and byline ("Every consultation is with Thihan Chandramohan") → six numbered pathways, each with a one-line summary, a short paragraph and one or two actions: A cricket injury, Returning to cricket, Fast bowling, A second opinion, Support across a season, My club or team → "In Melbourne, or anywhere" (in person and online) → "What an assessment involves" → "Honest limits" → closing CTA.
+- **Still to add (P2):** Sports Injury Screening once `/screening` exists (16.8).
 
 ### 16.5 Telehealth, `/telehealth` (P2 refresh)
 
@@ -715,7 +775,8 @@ Every page: one audience focus, one business purpose, one primary action. "Built
 
 - **Audience:** players late in rehab, parents, coaches, physios.
 - **Primary action:** Book a Return to Performance Assessment.
-- **Structure:** H1 "Return to performance: rehab that finishes at the demands of cricket" → participation / sport / performance definitions → the eight-stage progression with example exit criteria (section 19.2) → the assessment: what gets tested, what you get, $250, 60 minutes → honest limit (keep) → when to book (keep) → memberships link for players who want the whole return managed.
+- **Built in version 2:** the six-stage pathway (same component as home) sits under the hero.
+- **P2 structure:** H1 "Return to performance: rehab that finishes at the demands of cricket" → participation / sport / performance definitions → the eight-stage progression with example exit criteria (section 19.2) → the assessment: what gets tested, what you get, $250, 60 minutes → honest limit (keep) → when to book (keep) → memberships link for players who want the whole return managed.
 
 ### 16.8 Sports Injury Screening, `/screening` (P2 new)
 
@@ -745,16 +806,22 @@ Every page: one audience focus, one business purpose, one primary action. "Built
 - **Built on this branch:** a club-package band near the top, so clubs route to fixed-price packages before the consulting pitch.
 - **P2 structure:** section 21.
 
-### 16.12 Resources, `/resources` (P4 rebuild)
+### 16.12 The Cricket Physio Journal, `/resources` (rebuilt, version 2)
 
-- **Audience:** clinicians, coaches, S&C, parents.
-- **Primary action:** join the mailing list (P4). Until then, read a guide.
+- **Audience:** players, parents, coaches, clinicians.
+- **Purpose:** show authority through dated, referenced writing.
+- **Primary action:** read a guide; secondary Book a consultation.
+- **Title:** "The Cricket Physio Journal | Cricket Injury Guides". **H1:** "The Cricket Physio *Journal*".
+- **Structure:** hero with byline ("Written and reviewed by Thihan Chandramohan") → topic taxonomy with counts (Back and bone stress, Fast bowling, Workload, Muscle injuries, Shoulder and throwing, Rehabilitation) → journal cards with tag, title, summary and reviewed date → "Clinicians, tools and speaking" → "Dated, referenced, and revised" → closing CTA.
+- **P4:** mailing list, `/resources/clinicians`, `/resources/coaches`, and taxonomy filters once there are more than about 12 pieces.
 
-### 16.13 About, `/about` (P2 refresh)
+### 16.13 About, `/about` (rebuilt, version 2)
 
-- **Audience:** anyone checking credibility; organisations; agents.
-- **Primary action:** Book a consultation, secondary Team enquiry.
-- **Change:** add the portrait (shot 10, now in `assets/img/`), roles with years, a one-line education and registration block, and a speaking/media line. Keep "What I will not do". Keep it under 900 words.
+- **Audience:** anyone checking credibility; professionals and their agents; organisations.
+- **Primary action:** Book a consultation; secondary Team and organisation work.
+- **H1:** "Thihan *Chandramohan*".
+- **Structure:** hero with portrait and AHPRA credential card → "Two jobs, at different scales" with the career list by level → "Three things shape every plan" → image band "I have had my own surgery and rehab" → "Honest limits" → the two practices (this site and Bridge Road) → closing CTA.
+- **Still needed:** confirmed role titles and years (2.3).
 
 ### 16.14 Book, `/book` (live)
 
@@ -772,6 +839,17 @@ Every page: one audience focus, one business purpose, one primary action. "Built
 ### 16.17 404 (live)
 
 - Keep the helpful links. Add the problem selector (P2).
+
+### 16.18 Professional players, `/professional-players` (new, version 2)
+
+- **Audience:** international, franchise, county and state players, and their agents or managers.
+- **Purpose:** win discreet second opinions, return-to-play planning and off-season work from professionals, without competing with their team's medical staff.
+- **Primary action:** Discuss your situation (to the `pro` enquiry form). Secondary: Book a consultation.
+- **Title:** "Physio for Professional Cricketers | The Cricket Physio". **H1:** "Discreet input for the *professional* game."
+- **Structure:** hero with byline and the pitch-side photo with an experience card → "The decisions that shape a season" (Second opinions, Return to play, Fast bowlers, Between contracts, On tour, Preparation) → "Alongside your medical staff, never around them" (A short call, Review, A written plan, Follow-through) → "What stays in the room stays in the room" (confidentiality) → "I have been the team physio" (career list) → "One decision, or the whole season" (consultation, Integrated Performance, consulting) → enquiry form → FAQ (5) → closing band "A second view, before the next decision."
+- **Form (`pro`):** name, email, phone or WhatsApp, team or contract, preferred contact, permission to contact a manager or agent, what is going on, health-information consent. Required: name, email, message, consent. Reply promise: usually within two business days.
+- **Must not:** name current clients, imply endorsement by any team, or promise availability or outcomes.
+- **Launch gate:** the hero photo (1.4 item 12).
 
 ---
 
@@ -1145,7 +1223,8 @@ Rules:
 |---|---|---|---|
 | Primary, site-wide | Book a consultation | Header (desktop), "Book" (phone header), footer, home hero and closing band | Primary button |
 | Product | Join Essentials · Join Performance · Apply for Integrated Performance · Enquire about Club Core · Enquire about Club Plus · Discuss club support | Product pages and cards | Featured tier primary, others secondary |
-| Low commitment | Start tracking your bowling | Bowling pages, memberships, home fast bowler band | Primary inside navy bands, text link elsewhere |
+| Professionals | Discuss your situation | `/professional-players`, home professionals band ("For professional players") | Primary button |
+| Low commitment | Start tracking your bowling | Bowling pages, memberships, home fast bowler section | Primary in the fast bowling section, text link elsewhere |
 | Tertiary | Ask a question · Compare memberships | Closing bands, beside a primary | Secondary button or text link |
 
 ### 26.2 One next step per page
@@ -1156,6 +1235,7 @@ Rules:
 | `/services`, `/telehealth`, `/in-person` | Book (the matching calendar) |
 | `/return-to-performance` | Book a Return to Performance Assessment |
 | `/cricket-performance` | Find the right level of support |
+| `/professional-players` | Discuss your situation |
 | Players page | The tier CTA → application |
 | Clubs page | Discuss club support |
 | `/bowling` and bowling guides | Start tracking your bowling |
@@ -1232,48 +1312,54 @@ Rationale: an application for a $449 to $949 monthly service justifies more ques
 
 All components live in `style.css`. Class names below are the contract: reuse them before writing new CSS. "Built" means implemented and in use.
 
+**Effects and where they run.** Reveals: elements matching the `REVEAL` list in `script.js` fade up once as they enter the viewport; anything already on screen at load is never hidden, and without JavaScript nothing is hidden (`html.js [data-reveal]`). Parallax: `[data-parallax]` image bands only. Spotlight: `.spot` cards. All of it stops under `prefers-reduced-motion`.
+
 | Component | Markup | Use when | Do not use when | Behaviour | Status |
 |---|---|---|---|---|---|
-| Header | `_partials/header.html`, `.hdr` | Every page | | Sticky, translucent paper with blur; brand, nav, Book. Phone: brand, Book, menu | Built |
-| Main nav | `.nav`, `[data-menu-toggle]` | Every page | | Below 1100px a panel opens under the header; Escape closes and returns focus; closes on link click and on resize to desktop | Built |
-| Hero, light | `section.hero` | Guides, legal and utility pages | Product pages | Eyebrow, H1, lede, up to two buttons | Built |
-| Hero, dark | `.hero.hero--dark` (+ `.hero--compact`) | Home and product pages | Guides | Navy, re-tokened; crumbs inside | Built |
-| Problem selector | `nav.selector > ul > li > a` | Routing by problem (home; P2 on `/services`, 404) | More than 8 rows | 48px rows, arrow nudges 3px on hover, `data-track="problem_select"` | Built |
-| Credibility line | `ul.credline` (+ `.credline--4`) | Directly under hero CTAs | More than four items | 1 column on phones, 2 from 576px, 4 across from 1024px | Built |
-| Organisation strip | `.orgs` | Home only | As a logo wall | Names as text, wrap freely | Built |
-| Section head | `.section-head` (+ `--center`) | Opening a section with eyebrow, H2, lede | | Max 46rem, bottom margin 32 to 48px | Built |
-| Rule columns | `.rulecols--2/3/4` | Parallel short items | Items that need comparing on price | 2px ink top rule, no box | Built |
-| Split | `.split`, `--even`, `--wide-left` | Heading beside content | Content that needs full width | 5:7 grid from 1024px; stacks below | Built |
-| Tier card | `article.tier` (+ `--featured`), generated | Membership tiers | Anything that is not a purchasable option | Flag label on featured; price block; ticks; details for full list; not-included list; CTA pinned to the bottom | Built |
-| Club card | `.tiers--clubs .tier`, generated | Club packages | | Two across from 640px | Built |
-| Comparison table | `.compare-wrap > table.compare`, generated | Comparing tiers or packages | Fewer than 5 rows | Real table from 768px with sticky header row; below 768px each row becomes a block, values labelled with the tier name; ARIA roles keep semantics | Built |
-| Data table | `table.datatable` (+ `--stack`) | Fees, junior prices | | Stacks to label/value pairs below 576px | Built |
-| Journey | `ol.journey`, generated | The membership progression | Timelines of events | Horizontal with dots on a rule from 1024px; vertical below | Built |
-| Continuum | `ol.continuum` | Return-to-performance phases | Other processes | As journey, with stage chips | Built |
-| Steps | `ol.steps.steps--4` | A process with 3 to 5 steps | More than 5 steps | Numbered 01 to 04, rule after the number | Built |
-| Scenarios | `dl.scenarios` | "Where this fits" situations | | 1, 2 or 3 columns; each ends with the usual starting tier | Built |
-| Versus | `.versus` | Before/after or old way/new way | Comparing products | Two lists, the right one has a green rule | Built |
-| Stacked lines | `ul.lines` | A short rhythmic list (7 lines max) | Long items | Last line in green | Built |
-| Tier list | `dl.tierlist` | "Per level" explanations | | Label column 12rem from 576px | Built |
-| Profile | `.profile` + `.facts` | Introducing Thihan | Anyone else | 4:5 portrait at 240 × 300, `object-position: top`; facts in two columns | Built |
-| Article list | `ul.articles` | Guides and resources | Products | Category, title, description, date; whole row is the link | Built |
-| Notice | `.notice` (+ `--sand`) | Consent, limits, emergency | Marketing | Left rule only, quiet | Built |
-| Callout | `.callout` | Asides inside guides | Page sections | Green wash, left rule | Built |
-| FAQ | `.faq > details > summary + .faq__a` | Questions and answers | More than 15 on a page | Native details; chevron rotates; opens tracked; FAQ schema generated from it | Built |
-| Form | `form.form[data-enquiry][data-form][data-events]` | Enquiries and applications | | Fieldsets, 2-column rows from 640px, inline validation on blur and submit, conditional fields via `data-show-if`, honeypot, focus moves to the first error | Built |
-| CTA band | `section.cta-band` | Closing a page | Mid-page | Navy, H2 max 22ch, up to two buttons | Built |
-| Sticky CTA | `.stickycta[data-sticky]` + `body.has-sticky` + `[data-sticky-hide]` | Product pages on phones and tablets | Guides, home | Slides up when no hide-target is on screen | Built |
-| Breadcrumbs | `nav.crumbs > ol` | Every page but home | | Slash separators via CSS | Built |
-| Footer | `_partials/footer.html`, `.ftr` | Every page | | Navy; theme toggle lives here | Built |
-| Theme toggle | `.themebtn[data-theme-toggle]` | Footer only | Header | `aria-pressed`; remembered in local storage | Built |
-| Buttons | `.btn--primary`, `.btn--secondary`, `.btn--sm`, `.btn--block` | Actions | Navigation lists | 48px min height (40px small) | Built |
-| Text link | `a.textlink` | A section's next step in running layout | Inline in a sentence | Arrow nudges 2px on hover | Built |
-| Card (legacy) | `.card`, `.card--link` | Existing hub pages until rebuilt | New work | Whole card clickable via the heading link | Built, retire in P2 |
-| Related content | `.related` | End of every guide | | 3 links, same article-row styling | P3 |
-| Author box | `.author` | Guides | | Photo 64px, name, role, reviewed date | P3 |
-| Stat block | `.stat` | A number with a source | Unsourced or vanity numbers | Archivo numeral, label, source line | P4 |
-| Media figure | `figure.media` | Photography | Decoration | `<picture>`, caption, ratio classes `--3x2`, `--4x5`, `--3x1` | P4 |
-| Case example | `.case` | De-identified cases | Testimonials | Situation, what was done, what changed, consent note | P4 |
+| Head | `_partials/head.html` | Every page | | Colour scheme, theme colour, favicon set, manifest, font preloads, stylesheet, `html.js` flag | Built |
+| Header | `_partials/header.html`, `.hdr` | Every page | | Sticky glass header with the logo; border and smaller logo once scrolled; Book always visible on phones | Built |
+| Progress bar | `.progress` | Every page (in the header partial) | | 2px teal gradient along the top, tracks scroll | Built |
+| Main nav | `.nav`, `[data-menu-toggle]` | Every page | | Below 1200px a panel opens under the header; Escape closes and returns focus | Built |
+| Hero, home | `.hero.hero--home` + `.hero__grid` | Home, `/about`, `/professional-players` | Guides | Copy left, photo right from 1024px; teal glow; copy rises in on load | Built |
+| Hero, text | `.hero.hero--animate` | Hubs without a photo (`/services`, the Journal) | Home | Crease-line graphic on desktop; copy rises in | Built |
+| Hero name | `.hero__name` | Above the home H1 | Anywhere else | 44px avatar, name, role | Built |
+| Hero portrait | `.hero__portrait` (+ `--landscape`) + `.glasscard` | Hero photos | Inline images | 4:5 portrait or wide crop, offset teal frame, glass credential card | Built |
+| Byline | `.byline` | Under hero CTAs on product and hub pages | More than once per page | Pill with a 38px avatar: "Handled personally by Thihan Chandramohan" and similar | Built |
+| Proof strip | `ul.proof` | Home hero | Unsourced figures | Four serif numerals with gradient fill and labels; 2 × 2 on phones | Built |
+| Logo marquee | `.orgbar` + `.marquee` + `.logo-chip` | Home only | Without written permission (1.4 item 14) | White chips drift left; pauses on hover and focus; duplicate set `aria-hidden` | Built |
+| Pathway cards | `ul.paths > li > a.path.spot` | Routing: "What brings you here?", "Four ways in", pro page options | Lists of facts | Numbered in italic serif; spotlight follows the pointer; whole card is the link | Built |
+| Help list | `.helplist > .help` | `/services` pathways | Home | Large serif number and title, summary, paragraph, one or two actions | Built |
+| Pathway | `ol.pathway` | The six return-to-performance stages | Other processes | Vertical with a left line on phones; six across from 1024px; the teal line draws in on entry | Built |
+| Image band | `section.imageband` + `.imageband__media[data-parallax]` | One per page at most | Photos with faces where text would cover them | Full-bleed photo, dark scrim, slight parallax | Built |
+| Fast bowling section | `section.bowling` + `.bowling__pitch` | Home only | | Title up to 128px; pitch diagram behind | Built |
+| Media figure | `figure.media` (+ `--4x3`) | Inline photography | Decoration | Rounded, shadowed, teal glow behind; caption | Built |
+| Pull quote | `blockquote.quote` + `cite` | Thihan's own words, once per page | Anyone else's words, testimonials | Italic serif with avatar in the citation | Built |
+| Career list | `ul.career` | Roles by level | Unconfirmed roles | Level label in teal caps, organisations, optional role line | Built |
+| Journal cards | `ul.journal > li > a.jcard` | Guides and articles | Products | Tag, serif title, summary, reviewed date; lifts on hover | Built |
+| Taxonomy | `ul.topics` / `.taxonomy` | Journal topic list with counts | | Pills with counts | Built |
+| Seam divider | `hr.seam` | Between two quiet sections | More than one per screen | Teal line with clay stitches | Built |
+| Section head | `.section-head` (+ `--center`, `--row`) | Opening a section | | Eyebrow, H2, lede | Built |
+| Split | `.split` (+ `--even`, `--center`, `--wide-left`) | Heading beside content | | Side by side from 1024px | Built |
+| Tier card | `article.tier` (+ `--featured`), generated | Membership tiers and club packages | Anything not purchasable | Featured tier has a slowly turning teal border (`@property --angle`), a text flag and a glow; price block; ticks; not-included list | Built |
+| Comparison table | `.compare-wrap > table.compare`, generated | Comparing tiers or packages | Fewer than 5 rows | Real table from 768px with a sticky header; blocks below | Built |
+| Data table | `table.datatable` (+ `--stack`) | Fees, junior prices | | Stacks below 576px | Built |
+| Journey | `ol.journey`, generated | The membership progression | | Horizontal from 1024px | Built |
+| Steps | `ol.steps` | A process with 3 to 5 steps | More than 5 | Numbered | Built |
+| Scenarios, versus, stacked lines, tier list | `dl.scenarios`, `.versus`, `ul.lines`, `dl.tierlist` | Membership pages | | As version 1, re-coloured | Built |
+| Notice | `.notice` (+ `--sand`) | Consent, limits, emergency | Marketing | Left rule, quiet | Built |
+| Callout | `.callout` | Asides inside guides | Page sections | Teal wash, left rule; headings inside use the text face | Built |
+| FAQ | `.faq > details > summary + .faq__a` | Questions and answers | More than 15 on a page | Native details; opens tracked; FAQ schema generated | Built |
+| Form | `form.form[data-enquiry][data-form][data-events]` | Enquiries and applications (`team`, `player`, `club`, `pro`) | | Inline validation, conditional fields, honeypot, focus to first error | Built |
+| CTA band | `section.cta-band` | Closing a page | Mid-page | Glow behind, H2 max 22ch, up to two buttons | Built |
+| Sticky CTA | `.stickycta[data-sticky]` | Product pages on phones and tablets | Guides, home | Glass bar; appears when no hide-target is on screen | Built |
+| Breadcrumbs | `nav.crumbs > ol` | Every page but home | | Slash separators | Built |
+| Footer | `_partials/footer.html`, `.ftr` | Every page | | Logo, name block, four columns, legal strip, social links | Built |
+| Buttons | `.btn--primary`, `.btn--secondary`, `.btn--sm`, `.btn--block`, `.btn--arrow` | Actions | Navigation lists | Pills, 52px high; primary has the teal gradient, glow and a sheen on hover | Built |
+| Text link | `a.textlink` | A section's next step | Inline in a sentence | Arrow nudges on hover | Built |
+| Card (legacy) | `.card`, `.card--link` | Pages not yet rebuilt | New work | Whole card clickable | Built, retire in P2 |
+| Related content, author box, stat block, case example | `.related`, `.author`, `.stat`, `.case` | Guides and case pages | | As version 1 | P3 to P4 |
+
+**Removed in version 2:** theme toggle (`.themebtn`), problem selector on home (`nav.selector`, still styled for later use on 404), organisation names strip on home (`.orgs`, kept in CSS as the fallback if logo permission is refused).
 
 ---
 
@@ -1281,23 +1367,22 @@ All components live in `style.css`. Class names below are the contract: reuse th
 
 | Breakpoint | Width | What changes |
 |---|---|---|
-| Tiny | ≤352px (22rem) | Brand wordmark 16px; Book button narrower |
-| Small | 576px (36rem) | Credibility line 2 columns; facts 2 columns; data tables stop stacking; tier list gets a label column |
+| Tiny | ≤368px (23rem) | Header logo 40px |
+| Small | 576px (36rem) | Data tables stop stacking; tier list gets a label column |
 | Form | 640px (40rem) | Form fields pair into rows; club cards 2 across |
-| Tablet | 768px (48rem) | Comparison tables become real tables; gutters 24px; body 18px; steps and rule columns 2 across |
-| Desktop | 1024px (64rem) | Splits go side by side; tiers 3 across; journey and continuum go horizontal; sticky CTA stops |
-| Nav | 1100px (68.75rem) | Full nav replaces the menu button |
-| Wide | 1280px (80rem) | Gutters 32px |
+| Tablet | 768px (48rem) | Comparison tables become real tables; gutters 32px; body 18px; grain overlay on; header 84px; hero photos run full width in a 3:2 crop |
+| Desktop | 1024px (64rem) | Hero goes two columns; splits side by side; tiers and pathway cards 3 across; pathway goes horizontal; sticky CTA stops; crease graphic appears |
+| Nav | 1200px (75rem) | Full nav replaces the menu button |
+| Wide | 1280px (80rem) | Gutters 48px; content width 1280px |
 
 Rules:
 
-- Max page width 1200px (75rem) plus gutters. Long-form text 42rem. Section heads 46rem.
-- Gutters: 16px phone, 24px tablet, 32px wide.
-- Section padding: `clamp(3.5rem, 2.5rem + 4vw, 6rem)`, so 56px on phones to 96px on desktop. Tight bands 32 to 48px.
-- Tap targets at least 44 × 44px; buttons and selector rows 48px.
-- At 390 × 844, the home H1 is at most four lines and the primary CTA sits inside the first screen (Fact: verified).
-- No horizontal scrolling at 390px on any page (Fact: tested on home, the three product pages, `/teams`, `/bowling`).
-- Buttons in heroes go full width below 480px.
+- Max content width 1280px (80rem) plus gutters. Long-form text 42rem.
+- Gutters: 20px phone, 32px tablet, 48px wide.
+- Tap targets at least 44 × 44px; buttons 52px.
+- At 390 × 844, the home H1 fits in four lines and the primary CTA sits inside the first screen (Fact: verified).
+- No horizontal scrolling at 390px on any page (Fact: tested on 20 pages including every rebuilt page and all three guides).
+- Hero buttons go full width below 480px.
 - Tables never scroll sideways; they restructure.
 
 ---
@@ -1311,17 +1396,18 @@ Target: WCAG 2.2 AA across the site.
 | Contrast | Every text pair measured (section 9.2). Non-text UI at least 3:1 |
 | Not colour alone | Featured tier: label and thicker border. Yes/No: tick and word. Errors: symbol, text, thicker border |
 | Keyboard | Everything reachable and operable. Menu closes on Escape and returns focus. Skip link first in the page |
-| Focus visible | 3px outline, 2px offset, orange on light, amber on navy, never removed |
+| Focus visible | 2px amber (`#F2B35B`) outline, 3px offset, never removed. Inputs add a teal border and halo |
 | Landmarks | `header`, `nav[aria-label]`, `main#main`, `footer`; breadcrumbs as `nav` |
 | Headings | One H1; no skipped levels (`qa.py` checks) |
 | Forms | Every control labelled; hints linked with `aria-describedby`; errors in the field's `.err` with `role="alert"` and `aria-invalid`; focus moves to the first error; status region `aria-live="polite"` and focused on submit |
 | Conditional fields | Hidden fields are also disabled, so screen readers and validation skip them |
 | Tables | `caption`, `scope`, and explicit ARIA roles so the stacked mobile layout keeps table semantics |
-| Motion | `prefers-reduced-motion` disables smooth scroll, arrow nudges and the sticky slide |
+| Motion | `prefers-reduced-motion` stops smooth scroll, reveals, the marquee, parallax, the pathway draw, the turning tier border, the hero entrance and hover lifts. Content is never hidden waiting for an animation |
+| Marquee | The duplicated logo set is `aria-hidden`; the loop pauses on hover and keyboard focus |
+| Decorative graphics | Pitch, crease and seam graphics are CSS or `aria-hidden` SVG |
 | Language | `lang="en-AU"` |
 | Images | Meaningful `alt`; decorative `alt=""` |
 | Sticky CTA | Uses `visibility: hidden` when off screen, so it cannot take focus |
-| Theme toggle | Constant label "Dark theme" with `aria-pressed` |
 
 **Not yet done (Phase 2 acceptance):** a screen reader pass with VoiceOver on iOS and NVDA on Windows across home, players, clubs and one guide, and a 200% zoom check.
 
@@ -1341,11 +1427,12 @@ Target: WCAG 2.2 AA across the site.
 | Double counting | `site-config.js` fired the form's `data-track` on every submit attempt, including invalid ones, and `script.js` fired it again on success | Removed the submit listener; forms fire `_start`, `_invalid`, `_complete`, `_error` |
 | Booking | Links to the Bridge Road booking page and Halaxy, tagged with UTM at click time | Kept |
 | Forms | One team enquiry form, Resend via a Vercel Function, honeypot | Generalised to team, player and club forms with per-form whitelists and checks |
-| Dead code | `.rise` entrance animation; header theme toggle and its icon swapping | Removed |
+| Dead code | `.rise` entrance animation; header theme toggle and its icon swapping | Removed. Version 2 removed the theme system entirely |
 | Duplicates | Nav and footer ×21; FAQ answers repeated between home and `/faq`; injury card blurbs on three pages | Partials; home FAQ removed; card blurbs to be retired in P2 |
 | Lint tool | Crashed on the first finding (assumed an absolute path) | Fixed; now skips partials and docs |
 | Public internals | `cricket-logo/` (3.4 MB of raw logos), README and the site map were served from the live domain | `.vercelignore` added for docs, data, tools, partials, logos and markdown |
-| Fonts | Google Fonts, with the privacy policy noting Google receives visitors' IP addresses | Self-hosted and trimmed; CSP tightened to `font-src 'self'` |
+| Fonts | Google Fonts, with the privacy policy noting Google receives visitors' IP addresses | Self-hosted and trimmed; CSP tightened to `font-src 'self'`. Version 2: Instrument Serif and Manrope |
+| Icons (version 2) | One SVG favicon, no manifest | `favicon.ico` (16, 32, 48), PNG favicons, Apple touch icon, 192 and 512 icons plus a maskable 512, `site.webmanifest`, all from the logo mark on a dark tile |
 | Caching | `vercel.json` serves css, js and images as `immutable` for a year, but pages linked them by fixed names. After any change, returning visitors would keep the old `style.css` for up to a year | The build stamps every local css, js and image reference with `?v=<content hash>`. Fonts are excluded (see 31.3) |
 
 ### 31.2 Stack decision
@@ -1379,18 +1466,20 @@ Keep the headers in `vercel.json`: HSTS, CSP, `X-Content-Type-Options`, `Referre
 
 ## 32. Performance requirements
 
-Measured on this branch (Fact):
+Measured on this branch, version 2 (Fact):
 
 | Asset | Raw | Gzip |
 |---|---|---|
-| `style.css` | 49.2 KB | 11.1 KB |
-| `script.js` | 16.7 KB | 5.4 KB |
-| `site-config.js` | 7.7 KB | 3.0 KB |
-| Home HTML | 20.8 KB | 5.8 KB |
-| Players page HTML | 66.5 KB | 14.9 KB |
-| Fonts preloaded (Archivo + Plex) | 72.3 KB | |
-| Plex italic (loads only where used) | 24.4 KB | |
-| Portrait (WebP, 480 × 600, served at 2×) | 27.5 KB | |
+| `style.css` | 69.4 KB | 14.6 KB |
+| `script.js` | 17.7 KB | 5.7 KB |
+| `site-config.js` | 7.6 KB | 2.9 KB |
+| Home HTML | 29.5 KB | 7.6 KB |
+| Players page HTML | 66.1 KB | 15.0 KB |
+| Fonts preloaded (Manrope + Instrument Serif) | 43.2 KB | |
+| Instrument Serif italic (loads on first use) | 21.6 KB | |
+| Hero portrait (WebP, 880 × 1100) | 67.9 KB | |
+| Header logo (WebP) | 16.3 KB | |
+| Eight organisation logos (WebP) | about 60 KB | |
 
 Budgets:
 
@@ -1399,14 +1488,14 @@ Budgets:
 | Largest Contentful Paint | ≤ 2.0 s |
 | Cumulative Layout Shift | ≤ 0.05 |
 | Interaction to Next Paint | ≤ 200 ms |
-| CSS + JS transferred | ≤ 30 KB gzip (currently 19.5 KB) |
+| CSS + JS transferred | ≤ 30 KB gzip (currently 23.2 KB) |
 | Fonts | ≤ 100 KB, two files preloaded |
 | Page weight excluding photography | ≤ 200 KB |
 | Hero photograph | ≤ 180 KB |
 | Third-party requests | Zero until analytics is added; then one |
 | Lighthouse (mobile) | ≥ 95 in every category |
 
-Rules: no JS framework; no carousels; no autoplay video; images with dimensions set; lazy-load below the fold; long cache headers on static assets (already set); fonts subset and trimmed.
+Rules: no JS framework; no carousels (the logo marquee is CSS, not a carousel); no autoplay video; grain overlay only from 768px, where paint cost is affordable; images with dimensions set; lazy-load below the fold; long cache headers on static assets (already set); fonts subset and trimmed.
 
 ---
 
@@ -1420,7 +1509,7 @@ Every event pushes `{ event: 'tcp_event', tcp_action, tcp_detail }` to `window.d
 |---|---|---|
 | `book_click` | Any link into booking | href |
 | `telehealth_click` | Telehealth booking link | href |
-| `problem_select` | Home problem selector row | href |
+| `problem_select` | A "What brings you here?" card on home | href |
 | `find_level_click` | "Find the right level of support" | href |
 | `compare_click` | "Compare memberships" | href |
 | `memberships_click` | Other links into `/cricket-performance` | href |
@@ -1435,22 +1524,25 @@ Every event pushes `{ event: 'tcp_event', tcp_action, tcp_detail }` to `window.d
 | `application_start` / `_invalid` / `_complete` / `_error` | Player application | form type / field / tier / error |
 | `club_enquiry_start` / `_invalid` / `_complete` / `_error` | Club form | as above, detail is the package |
 | `team_enquiry_start` / `_invalid` / `_complete` / `_error` | Team form | as above |
+| `pro_enquiry_start` / `_invalid` / `_complete` / `_error` | Professional player form | as above |
+| `pro_page_click` | Link into `/professional-players` | href |
+| `pro_enquiry_click` | "Discuss your situation" | href |
 | `bowling_tool_click` | Any link to the Bowling Workload Tool | href |
 | `faq_open` | An FAQ answer opens | question |
 | `scroll_depth` | 25, 50, 75, 100% per page view | percentage |
 | `article_read` | Guide scrolled past 75% | path |
 | `phone_click`, `email_click`, `maps_click`, `bridgeroad_click` | Contact and outbound links | href |
-| `theme_toggle` | Theme changed | new theme |
 | `purchase_complete` | Not yet built: fires on the checkout success page | tier |
 
-Tested in a browser on this branch (Fact): tier preselect, conditional fields, validation, mocked submissions, `application_*`, `club_enquiry_*`, `tier_card_view`, `faq_open`, `scroll_depth` and `membership_*` events all fire as specified.
+Tested in a browser on this branch (Fact, version 2, 60 checks): tier preselect, conditional fields, validation, mocked submissions for the player, club and professional forms, `application_*`, `club_enquiry_*`, `pro_enquiry_*`, `tier_card_view`, `faq_open`, `scroll_depth` and `membership_*` events all fire as specified.
 
 ### 33.2 Funnels to report
 
 1. Memberships: `/cricket-performance` view → `tier_card_view` → `membership_*` → `application_start` → `application_complete` → (later) `purchase_complete`.
-2. Clubs: clubs page view → `club_*_enquiry` or `club_discuss_click` → `club_enquiry_start` → `club_enquiry_complete`.
-3. Consultations: any page → `book_click` / `telehealth_click` → Halaxy booking (UTM `utm_source=thecricketphysio`, campaign = the `data-utm` value).
-4. Tool: `bowling_tool_click` → tool sign-ups (from the tool's own analytics).
+2. Professionals: `/professional-players` view (or `pro_page_click`) → `pro_enquiry_click` → `pro_enquiry_start` → `pro_enquiry_complete`.
+3. Clubs: clubs page view → `club_*_enquiry` or `club_discuss_click` → `club_enquiry_start` → `club_enquiry_complete`.
+4. Consultations: any page → `book_click` / `telehealth_click` → Halaxy booking (UTM `utm_source=thecricketphysio`, campaign = the `data-utm` value).
+5. Tool: `bowling_tool_click` → tool sign-ups (from the tool's own analytics).
 
 ### 33.3 Conventions
 
@@ -1471,7 +1563,7 @@ Tested in a browser on this branch (Fact): tier preselect, conditional fields, v
 | Booking | Links to Bridge Road's booking page and Halaxy, tagged with UTM | Halaxy calendars |
 | Fees | Telehealth fees and the five member-rate fees, kept in step | Single source of truth for clinic fees |
 | Content | All cricket content lives here | Links here for cricket; publishes no cricket guides of its own |
-| Visual identity | Navy, off-white, cricket green, Archivo | Its own palette; no shared templates |
+| Visual identity | Dark, logo teal and grey, Instrument Serif and Manrope. Shares the Bridge Road feel (dark, pill buttons, glass header, grain) at a higher spec | Its own palette and templates |
 
 ### 34.1 Exact wording where Bridge Road appears on this site
 
@@ -1537,7 +1629,10 @@ Tested in a browser on this branch (Fact): tier preselect, conditional fields, v
 |---|---|---|---|
 | Serif headings and teal palette | Site-wide | Replaced by the new system | Done |
 | Entrance animation (`.rise`) | Home cards | Removed | Done |
-| Header theme toggle | Every page | Moved to the footer | Done |
+| Header theme toggle | Every page | Moved to the footer in version 1; removed with the light theme in version 2 | Done |
+| Light theme | Site-wide | Removed (version 2) | Done |
+| Navy, off-white and green palette; Archivo and Plex | Site-wide | Replaced by the version 2 system | Done |
+| Drawn SVG mark and text wordmark | Header, favicon | Replaced by the master logo reversed for dark | Done |
 | "Who I work with" audience cards | Home | Replaced by the problem selector | Done |
 | Six-card injury grid | Home | Replaced by selector, fast bowler band, guides list | Done |
 | "Four ways to work together" card grid | Home | Replaced by "Three ways in" | Done |
@@ -1548,7 +1643,8 @@ Tested in a browser on this branch (Fact): tier preselect, conditional fields, v
 | Double-counted form event | `site-config.js` | Removed | Done |
 | Google Fonts | Every page | Self-hosted | Done |
 | Raw logos served publicly | `cricket-logo/` | `.vercelignore` | Done |
-| Card grids on hubs | `/services`, `/cricket-injuries`, `/resources` | Rule columns and article lists | P2 |
+| Card grids on hubs | `/services`, `/resources` | Rebuilt in version 2 (help list, Journal) | Done |
+| Card grids on hubs | `/cricket-injuries` | Journal cards | P2 |
 | Duplicated injury blurbs | Home, hub, resources | One description per guide, in the hub | P2 |
 | `cricket-physio-site-map.md` | Repo | Marked superseded by this brief | Done |
 | "Access by request" line in `site-config.js` comments | Config | Updated | Done |
@@ -1578,19 +1674,22 @@ Priority: **P0** blocks launch, **High** this phase, **Medium** next phase, **Lo
 | 1.12 | Set `RESEND_API_KEY` and verify the sending domain; send one real submission from each form | Forms fail without it | Vercel dashboard | P0 | | Three test emails received with correct subjects | To do |
 | 1.13 | Connect analytics (Plausible or Vercel) | Events go nowhere today | Heads, privacy, CSP | High | 1.10 | Events visible in the dashboard; privacy updated in the same commit | To do |
 | 1.14 | Stripe Payment Link for Essentials | Remove the manual step for the lowest tier | `data/offers.json` | High | 1.11 | Join Essentials opens checkout; `checkout_start` fires | To do |
+| 1.16 | Version 2: dark-only system, logo everywhere, Thihan to the front | Owner direction (1.5) | All pages, `style.css`, partials, assets | P0 | | Sections 9, 10, 14, 15 and 28 built; contrast table 9.2 holds; e2e passes | Done |
+| 1.17 | `/professional-players` page and `pro` form | International professionals are now a target audience | New page, `api/enquiry.js`, nav, footer, sitemap | P0 | 1.16 | Section 16.18 built; handler accepts `pro` and rejects missing consent; events fire | Done |
+| 1.18 | Photo consent and logo permissions | Identifiable player in an injury context; trade marks | Home, `/professional-players`, `/about` | P0 | Owner | Written consent for the pitch-side and gym images; written permission for each logo, or the fallbacks in 1.4 items 12 to 14 applied | To do |
 | 1.15 | CI check on pull requests | Stop stale builds and banned words reaching main | `.github/workflows` | Medium | 1.2 | PR fails when `build.py --check`, `qa.py` or `lint.py` fails | To do |
 
 ### Phase 2: core page rebuild
 
 | ID | Action | Rationale | Affected | Priority | Depends on | Acceptance criteria |
 |---|---|---|---|---|---|---|
-| 2.1 | Rebuild `/services` around the problem map | Most injured players land here | `/services` | High | 1.1 | Section 16.4; selector with 8+ problems; one primary CTA |
+| 2.1 | Rebuild `/services` around the problem map | Most injured players land here | `/services` | High | 1.1 | Section 16.4; one primary CTA. **Done in version 2** (six pathways); add screening when 2.3 lands |
 | 2.2 | Rebuild `/return-to-performance` as the pillar | The brand's defining idea | `/return-to-performance` | High | | Section 16.7 and 19; continuum component; stage table reviewed by Thihan |
 | 2.3 | New `/screening` page | Paid product without a page | `/screening`, sitemap | High | 1.11 | Section 16.8; states plainly that screening does not predict injury |
 | 2.4 | `/bowling` becomes the fast bowling hub | Pillar needs a hub | `/bowling` | High | | Section 16.9; `#return-to-bowling` still resolves |
 | 2.5 | Rebuild `/teams` | Consulting needs structure and proof | `/teams` | High | | Section 21; one case summary signed off |
 | 2.6 | Refresh `/telehealth` | Objections unanswered | `/telehealth` | Medium | | Section 20.2 and 20.3 content present |
-| 2.7 | Refresh `/about` | Trust page for organisations | `/about` | Medium | Photo 10 (delivered) | Portrait in place; roles with years; under 900 words |
+| 2.7 | Refresh `/about` | Trust page for organisations | `/about` | Medium | Photo 10 (delivered) | Portrait in place; roles with years; under 900 words. **Rebuilt in version 2**; role years still to confirm |
 | 2.8 | Membership routes on `/book`, `/contact`, `/faq`; selector on 404 | Close dead ends | Those pages | Medium | | Each has a route to memberships |
 | 2.9 | FAQ schema marker on `/faq` | Schema must match the page | `faq.html` | Low | | Hand-written JSON-LD removed; build generates it |
 | 2.10 | Photography shoot or archive pull | Imagery should carry the brand | Assets | High | Consent forms | At least shots 1 to 6 and 10 delivered at 2400px |
@@ -1613,7 +1712,7 @@ Priority: **P0** blocks launch, **High** this phase, **Medium** next phase, **Lo
 
 | ID | Action | Rationale | Affected | Priority | Depends on | Acceptance criteria |
 |---|---|---|---|---|---|---|
-| 4.1 | Rebuild `/resources`; add `/resources/clinicians`, `/resources/coaches` | Education audiences | Resources | Medium | | Each has at least three useful items |
+| 4.1 | Add `/resources/clinicians`, `/resources/coaches` (the Journal itself was rebuilt in version 2) | Education audiences | Resources | Medium | | Each has at least three useful items |
 | 4.2 | `/speaking` | Event organisers and media | New page | Medium | | Topics, bios in two lengths, headshot download |
 | 4.3 | Mailing list with double opt-in | Build the audience | Resources, footer, privacy | Medium | 1.13 | Sign-up works; privacy updated |
 | 4.4 | Guides: pre-season bowling, bowling shoulder, ankle | Complete the fast bowling cluster | New guides | Medium | 3.2 | Guide template, references, reviewed dates |
@@ -1639,53 +1738,78 @@ Priority: **P0** blocks launch, **High** this phase, **Medium** next phase, **Lo
 ### 38.1 Tokens
 
 ```css
-/* Brand */
---navy #0C1821; --navy-2 #132430; --navy-line #2A3B47;
---paper #F7F7F4; --white #FFFFFF; --stone #EEEEE8;
---green-700 #2F6B4F; --green-800 #24583F; --green-900 #1B4633; --green-50 #E7EFE9; --green-300 #8FC7A8;
---sand-300 #D8C8A0; --sand-700 #8A6D2F;
+/* Brand, from the logo reversed for dark */
+--teal #14ACAA; --teal-bright #3FD0CB; --teal-deep #0B6F6D; --grey #ADA7AC; --clay #CB7A55;
 
-/* Semantic, light (redefined for dark theme and inside navy bands) */
---bg --surface --surface-tint --ink --text --muted --line --line-strong
---link --link-hover --accent --accent-wash --btn-bg --btn-fg --btn-hover --btn-press --focus --danger --band-dark
+/* Surfaces, darkest first */
+--bg #071012; --bg-2 #0A1618; --surface #0F1D20; --surface-2 #142629; --glass rgba(10,22,24,.72);
+
+/* Text and lines */
+--ink #F4F1EA; --text #C4CDCB; --muted #8E9C9A;
+--line rgba(196,226,223,.10); --line-2 rgba(196,226,223,.18); --line-strong #627C80;
+
+/* Semantic */
+--link var(--teal); --link-hover var(--teal-bright); --accent var(--teal); --accent-wash rgba(20,172,170,.10);
+--btn-fg #041012; --btn-grad linear-gradient(135deg, #1BB8B4 0%, #129E9B 55%, #0E8C89 100%);
+--focus #F2B35B; --danger #FF8A73;
+
+/* Effects */
+--glow-teal radial-gradient(60% 60% at 50% 40%, rgba(20,172,170,.22), transparent 70%);
+--shadow-2 0 30px 80px -30px rgba(0,0,0,.9), 0 0 0 1px var(--line);
+--shadow-glow 0 0 0 1px rgba(20,172,170,.35), 0 20px 60px -20px rgba(20,172,170,.35);
+--ease cubic-bezier(.2, .7, .2, 1);
 
 /* Type */
---font-display "Archivo"; --font-text "IBM Plex Sans";
+--font-display "Instrument Serif"; --font-text "Manrope";
 
 /* Space: 4 8 12 16 24 32 48 64 96 128 px */
 --s1 .25rem  --s2 .5rem  --s3 .75rem  --s4 1rem  --s5 1.5rem
 --s6 2rem    --s7 3rem   --s8 4rem    --s9 6rem  --s10 8rem
 
 /* Layout */
---wrap 75rem; --measure 42rem; --gutter 1rem → 1.5rem (768px) → 2rem (1280px); --hdr 4rem;
+--wrap 80rem; --measure 42rem; --gutter 1.25rem → 2rem (768px) → 3rem (1280px); --hdr 4.5rem;
 
 /* Shape */
---radius 4px (buttons, inputs, chips); --radius-lg 8px (cards, tables, images);
---shadow-1 0 1px 2px rgba(12,24,33,.06);
---shadow-2 0 10px 30px -14px rgba(12,24,33,.30)   /* mobile menu, sticky CTA, back to top only */
+--radius 999px (buttons, chips, bylines); --radius-sm 10px (inputs); --radius-lg 20px (cards, images, tables);
+
+color-scheme: dark;
 ```
 
 ### 38.2 Rules for components
 
 | Element | Specification |
 |---|---|
-| Buttons | Min height 48px (small 40px); padding 12px 20px (small 8px 14px); radius 4px; Plex Sans 600 16px; 1.5px border; one primary per view; full width below 480px in heroes and tier cards |
-| Links | Green, 1px underline at 0.18em offset; hover ink with 2px underline |
-| Cards | White, 1px `--line`, radius 8px, padding 32px 24px 24px, no shadow. Featured: 2px green border plus a text flag |
-| Tables | White, 1px `--line` wrap, radius 8px; cells 13px 16px; header row sticky under the site header; group rows on stone in uppercase labels |
-| Inputs | Min height 48px; 1px `--line-strong`; radius 4px; 16px text (prevents iOS zoom); invalid state 2px danger border |
-| Checkboxes | Native, 22px, `accent-color` green |
-| Icons | Inline SVG only, `currentColor`, 2px stroke, 20 to 24px. Used for: brand mark, menu, theme, back to top. Nothing decorative |
-| Ticks and arrows | CSS-drawn ticks; "→" arrows on text links and selector rows |
-| Images | `<picture>`, WebP plus JPEG, width and height set, radius 8px inline, 0 full-bleed; referenced by path, the build adds the cache-busting hash |
-| Sections | Padding 56px phone to 96px desktop; tight bands 32 to 48px; alternate paper, stone and at most one navy band |
-| Grid | 12-column mental model: splits 5/7 or 6/6; rule columns 2, 3 or 4; tiers 3 |
-| Motion | 150 to 200ms colour and transform transitions; no entrance animation; all disabled under reduced motion |
-| Z-index | Skip link 200, progress 150, header 100, sticky CTA 95, back to top 90 |
+| Buttons | Pills; min height 52px; padding 15px 26px; Manrope 700 at 15.6px; primary uses `--btn-grad` with a teal glow and a sheen on hover; one primary per view; full width below 480px in heroes |
+| Links | Teal, 1px underline at 0.2em offset; hover teal bright |
+| Cards | `--surface` with a 1px `--line` or `--line-2` border, radius 20px, padding about 28px. Hover: border brightens, lift of 2 to 3px, spotlight on `.spot`. Featured tier: turning conic border plus a text flag |
+| Tables | `--surface`, radius 20px; header row sticky under the site header; group rows in uppercase labels |
+| Inputs | Min height 48px; `--surface`; 1px `--line-strong`; radius 10px; 16px text (prevents iOS zoom); focus adds a teal border and halo; invalid is a 2px danger border |
+| Checkboxes | Native, `accent-color` teal |
+| Icons | Inline SVG, `currentColor`. Used for menu, back to top and social links. The logo is an image, never an icon font |
+| Images | `<picture>`, WebP plus JPEG, width and height set, radius 20px inline, 0 full-bleed; the build adds the cache-busting hash |
+| Sections | Padding scales from about 56px on phones to 96px on desktop; alternate `--bg` and `--bg-2` (the `.band--stone` class now maps to `--bg-2`); at most one image band per page |
+| Grid | Splits 5/7 or 6/6; cards 2, 3 or 4 across; tiers 3 |
+| Motion | Hover transitions 150 to 400ms on `--ease`; reveals 900ms, staggered 80ms, once; pathway draw 1.6s; tier border turns every 8s; marquee loops slowly. Everything stops under reduced motion |
+| Grain | Fractal-noise SVG at 4.5% opacity over the page from 768px |
+| Z-index | Skip link 500, grain 400, progress 150, header 100, sticky CTA 95, back to top 90 |
 
 ### 38.3 Breakpoints
 
-352px · 576px · 640px · 768px · 1024px · 1100px (nav) · 1280px. Mobile-first `min-width` queries, except the nav, stacked tables and tiny-screen tweaks, which use `max-width`.
+368px · 576px · 640px · 768px · 1024px · 1200px (nav) · 1280px. Mobile-first `min-width` queries, except the nav, stacked tables and tiny-screen tweaks, which use `max-width`.
+
+### 38.4 Brand assets
+
+| File | Size | Use |
+|---|---|---|
+| `assets/brand/logo-header.{webp,png}` | 396 × 150 | Header |
+| `assets/brand/logo-full.{webp,png}` | 634 × 240 | Footer |
+| `favicon.ico` | 16, 32, 48 | Browsers |
+| `assets/brand/favicon-{16,32,48}.png` | | Browsers |
+| `assets/apple-touch-icon.png` | 180 × 180 | iOS home screen |
+| `assets/brand/icon-{192,512}.png`, `icon-maskable-512.png` | | Manifest, `Organization` logo |
+| `site.webmanifest` | | Name, colours and icons |
+
+All generated from the master logo in `cricket-logo/`, recoloured for dark. If an official reversed logo arrives, regenerate every file above from it.
 
 ---
 
@@ -1699,11 +1823,12 @@ Run on this branch at 390px and 1440px. "Pass" means the requirement holds in th
 | Fast bowler increasing pre-season load | Pass: "I am increasing my bowling" → `/bowling` | Pass | Pass | Pass | Pass: Start tracking your bowling | Pass: workload nuance stated | Depends on tool open sign-up (1.4 item 2) |
 | Parent of a talented 16-year-old | Pass | Pass | Pass: junior table and FAQ | Pass | Pass: guardian fields appear under 18 | Pass | Junior guide is P3; junior upfront pricing undefined |
 | Professional player with an existing S&C coach | Pass | Pass: Integrated "coordination across the support team" | Pass | Pass | Pass: Apply | Pass | FAQ "Do you replace my club physio or S&C coach?" answers the objection |
+| International professional, overseas, wanting a second opinion (version 2) | Pass: home band, nav item "Professionals", `/professional-players` | n/a | Pass: consultation fees on `/telehealth`; Integrated on the players page | Pass: "Honest limits" and FAQ | Pass: Discuss your situation | Pass | Blocked by the pitch-side photo consent (1.4 item 12) |
 | Club coach without a full-time physio | Pass: hero H1 says it | Pass: comparison table | Pass: from $5,000 in hero | Pass: "Not included" list | Pass: Discuss club support | Pass | |
 | Club physio wanting cricket-specific support | Partial | n/a | n/a | n/a | Partial: routes via `/teams` or `/contact` | Pass | A clinician route is P2 (2.8) and P4 (4.1) |
 | iPhone user | Pass: H1 four lines, CTA in first screen | Pass: tables regroup by feature | Pass | Pass | Pass: Book always in header; sticky product CTA | Pass | No horizontal scroll on tested pages; forms 16px so no zoom |
 
-Also checked (Fact): forms validate and submit (mocked); analytics events fire; all internal links resolve (`qa.py`); no placeholder copy; lint clean.
+Also checked (Fact, version 2): forms validate and submit (mocked, all four types); analytics events fire; all internal links resolve (`qa.py`); no placeholder copy; lint clean; no JavaScript errors; no horizontal scroll at 390px on 20 pages; tablet layouts checked at 820px.
 
 **Not checked:** real form delivery (needs `RESEND_API_KEY` on a deployment); real checkout (none exists); screen readers.
 
@@ -1725,6 +1850,10 @@ Also checked (Fact): forms validate and submit (mocked); analytics events fire; 
 | 10 | Indemnity for overseas telehealth | Insurer | Telehealth copy |
 | 11 | Photography shoot (shot 10 delivered; shots 1 to 9 outstanding) | Thihan | P2 |
 | 15 | FCRI permission for the crest visible in the portrait | Thihan | Low; before wider photo use |
-| 12 | Master logo refresh | Thihan | Brand consistency |
+| 12 | Master logo refresh: superseded. Version 2 uses the master logo, reversed for dark; confirm the reversal (1.4 item 16) | Thihan | Low |
 | 13 | Role titles and years for `/about` | Thihan | P2 |
-| 14 | Reference sites you like | Thihan | Visual refinement |
+| 14 | Reference sites: notes received and applied (1.5); URLs welcome for a check | Thihan | Low |
+| 16 | Written consent: Bangladesh player in the pitch-side photo, plus BCB for kit and sponsor marks | Thihan | Launch of `/professional-players` and home |
+| 17 | Consent for the Italy gym photo (player and FCRI kit) | Thihan | Launch |
+| 18 | Written permission for each of the eight organisation logos | Thihan | Launch of the home marquee |
+| 19 | "15+ years in elite cricket" versus "elite sport, most of it cricket" (2.3) | Thihan | Accuracy of home and footer |
