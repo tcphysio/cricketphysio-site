@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Checks generated pages against Thihan's writing rules and the brief's bans."""
-import re, sys, glob, html as H
+import re, os, sys, glob, html as H
 
 BANNED = """can may just very really literally actually certainly probably basically could maybe
 delve embark enlightening esteemed craft crafting imagine realm game-changer unlock discover
@@ -13,6 +13,10 @@ PHRASES = ["shed light","not alone","in a world where","dive deep","opened up","
            "elite mindset","optimise everything","world-class","holistic care","passionate about",
            "get back to doing what you love","state-of-the-art","in conclusion","it's worth noting"]
 
+# Exact phrases the owner wrote into the brief and chose to keep, despite a
+# banned word inside them. Each is removed before checking. Keep this short.
+ALLOW = ["not just pain"]
+
 def text_of(path):
     s = open(path).read()
     s = re.sub(r"<script.*?</script>", " ", s, flags=re.S)
@@ -21,8 +25,11 @@ def text_of(path):
     return H.unescape(s)
 
 fails = 0
+SKIP = {"_partials", "_tools", "docs", "cricket-logo", "node_modules"}
 for p in sorted(glob.glob("../**/*.html", recursive=True)):
+    if set(os.path.relpath(p, "..").split(os.sep)) & SKIP: continue
     t = text_of(p); low = t.lower()
+    for a in ALLOW: low = low.replace(a, " ")
     hits = []
     for w in BANNED:
         n = len(re.findall(r"\b" + re.escape(w) + r"\b", low))
@@ -36,6 +43,6 @@ for p in sorted(glob.glob("../**/*.html", recursive=True)):
         if re.search(r"\b"+us, low) and us != "program ": hits.append(f"US:{us}")
     if hits:
         fails += 1
-        print(f"{p.split('cricketphysio-site/')[1]:46} {', '.join(hits)}")
+        print(f"{os.path.relpath(p, '..'):46} {', '.join(hits)}")
 print("—" if False else "")
 print(f"{fails} file(s) with issues" if fails else "clean")

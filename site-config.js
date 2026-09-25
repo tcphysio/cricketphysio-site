@@ -52,8 +52,11 @@ window.TCP = (function () {
     bridgeRoadBookPage: 'https://www.bridgeroad.physio/book.html',
 
     /* --- The bowling workload tool ---------------------------------------
-       A separate product on its own subdomain. Access is by request, not open
-       signup: say "request access", never "sign up free". */
+       A separate product on its own subdomain. The basic version is free
+       (ball-count logging and simple trends) and is the low-commitment next
+       step across the site: "Start tracking your bowling". Paid memberships
+       add history, soreness monitoring, alerts, dashboards and oversight.
+       Membership prices live in data/offers.json, not here. */
     workloadTool: 'https://bowlingworkload.thecricket.physio',
 
     /* --- Professional profiles used as verifiable trust signals ----------- */
@@ -96,18 +99,40 @@ window.TCP = (function () {
      window.dataLayer and dispatched as a DOM event. If analytics is added
      later it picks these up with no markup changes.
 
-     Event names in use:
-       book_click            Any link into the Bridge Road booking flow
-       telehealth_click      Telehealth booking or enquiry
-       team_enquiry_submit   Team / organisation enquiry sent
-       team_enquiry_error    Team enquiry failed to send
-       team_enquiry_invalid  Blocked by inline validation; detail is the field
-       tool_open             Bowling workload tool opened
-       phone_click           Any tel: link
-       email_click           Any mailto: link
-       bridgeroad_click      Any outbound link to bridgeroad.physio
-       article_read          Article scrolled past 75%
-       theme_toggle          Light/dark switched; detail is the new theme      */
+     Event names in use. Detail, where there is one, is in brackets.
+       book_click                   Any link into the booking flow
+       telehealth_click             Telehealth booking
+       problem_select               Home page problem selector (href)
+       find_level_click             "Find the right level of support"
+       memberships_click            Any other link into /cricket-performance
+       compare_click                "Compare memberships"
+       membership_essentials_click  Join Essentials
+       membership_performance_click Join Performance
+       membership_integrated_apply  Apply for Integrated Performance
+       checkout_start               A tier CTA that goes to checkout (tier)
+       tier_card_view               Tier or club card half on screen (id)
+       club_page_click              Link from elsewhere to club packages
+       club_discuss_click           "Discuss club support"
+       club_core_enquiry            Enquire about Club Core
+       club_plus_enquiry            Enquire about Club Plus
+       application_start            Player application: first interaction
+       application_invalid          Blocked by validation (field name)
+       application_complete         Player application sent (tier)
+       application_error            Player application failed to send
+       club_enquiry_start / _invalid / _complete / _error   Club form, same pattern
+       team_enquiry_start / _invalid / _complete / _error   Team form, same pattern
+       pro_enquiry_start / _invalid / _complete / _error    Professional player form, same pattern
+       pro_page_click               Link into /professional-players
+       pro_enquiry_click            "Discuss your situation"
+       bowling_tool_click           Any link to the Bowling Workload Tool
+       faq_open                     An FAQ answer opened (question)
+       scroll_depth                 25, 50, 75, 100 per page view
+       article_read                 Article scrolled past 75%
+       phone_click / email_click / maps_click / bridgeroad_click
+
+     Purchase completion happens on the payment provider. When checkout is
+     connected, point its success URL at a page that fires purchase_complete.
+  */
 
   cfg.track = function (action, detail) {
     try {
@@ -120,11 +145,6 @@ window.TCP = (function () {
   document.addEventListener('click', function (e) {
     var el = e.target.closest ? e.target.closest('[data-track]') : null;
     if (el) cfg.track(el.getAttribute('data-track'), el.getAttribute('href'));
-  });
-
-  document.addEventListener('submit', function (e) {
-    var f = e.target;
-    if (f && f.matches && f.matches('form[data-track]')) cfg.track(f.getAttribute('data-track'));
   });
 
   return cfg;

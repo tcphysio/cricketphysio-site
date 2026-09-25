@@ -4,7 +4,9 @@ import os, re, glob, json, html as H
 from collections import defaultdict
 ROOT = ".."
 
-files = sorted(glob.glob(ROOT + "/**/*.html", recursive=True))
+SKIP = ("_partials", "_tools", "docs", "cricket-logo", "node_modules")
+files = sorted(f for f in glob.glob(ROOT + "/**/*.html", recursive=True)
+               if not set(os.path.relpath(f, ROOT).split(os.sep)) & set(SKIP))
 # Map every URL the site is able to serve (cleanUrls, trailingSlash:false)
 served = set()
 for f in files:
@@ -25,7 +27,7 @@ for f in files:
     # --- internal links resolve
     for href in set(re.findall(r'href="(/[^"#?]*)(?:[#?][^"]*)?"', s)):
         base = href.rstrip("/") or "/"
-        if base.startswith("/assets") or base.endswith((".css",".js",".xml",".txt",".svg",".png")):
+        if base.startswith("/assets") or base.endswith((".css",".js",".xml",".txt",".svg",".png",".ico",".webmanifest")):
             if not os.path.exists(ROOT + base): problems[rel].append(f"missing asset {base}")
             continue
         if base not in served and base not in REDIRECTS:

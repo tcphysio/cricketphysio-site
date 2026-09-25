@@ -1,0 +1,10 @@
+# Internal files that must not be served from thecricket.physio.
+# The brief holds commercial strategy; tools and partials are build inputs.
+docs
+_tools
+_partials
+data
+cricket-logo
+README.md
+CLAUDE.md
+cricket-physio-site-map.md

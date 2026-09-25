@@ -3,59 +3,19 @@
    ----------------------------------------------------------------------------
    No framework, no dependencies, no build step. Everything degrades: with
    JavaScript off the site is still readable, navigable and bookable, because
-   the menu falls back to a visible list and every call to action is a real
+   the menu falls back to a visible list, conditional form fields all show,
+   nothing waits on a reveal animation, and every call to action is a real
    link to a real URL.
+
+   Analytics events are named in site-config.js. This file fires the ones
+   that need more than a click: form starts and completions, tier card
+   views, FAQ opens and scroll depth.
    ========================================================================== */
 (function () {
   'use strict';
   var TCP = window.TCP || {};
   var track = TCP.track || function () {};
-
-  /* --- Theme ----------------------------------------------------------- */
-  /* The theme is applied by an inline script in <head> before first paint,
-     so there is no flash. This only wires the control up. */
-  var STORE = 'tcp-theme';
-  var root = document.documentElement;
-
-  function systemTheme() {
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  }
-  function currentTheme() {
-    return root.getAttribute('data-theme') || systemTheme();
-  }
-  function paintToggle(btn) {
-    var dark = currentTheme() === 'dark';
-    btn.setAttribute('aria-pressed', String(dark));
-    /* The control says what it will DO, not what the state is: clearer for
-       screen reader users than announcing the current theme. */
-    btn.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
-    btn.querySelector('[data-icon="sun"]').hidden = !dark;
-    btn.querySelector('[data-icon="moon"]').hidden = dark;
-  }
-
-  var toggle = document.querySelector('[data-theme-toggle]');
-  if (toggle) {
-    paintToggle(toggle);
-    toggle.addEventListener('click', function () {
-      var next = currentTheme() === 'dark' ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      try { localStorage.setItem(STORE, next); } catch (e) { /* private mode */ }
-      paintToggle(toggle);
-      track('theme_toggle', next);
-    });
-
-    /* If the visitor has never chosen, follow the system when it changes. */
-    if (window.matchMedia) {
-      var mq = window.matchMedia('(prefers-color-scheme: dark)');
-      var onChange = function () {
-        var saved = null;
-        try { saved = localStorage.getItem(STORE); } catch (e) {}
-        if (!saved) { root.removeAttribute('data-theme'); paintToggle(toggle); }
-      };
-      if (mq.addEventListener) mq.addEventListener('change', onChange);
-      else if (mq.addListener) mq.addListener(onChange);
-    }
-  }
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* --- Mobile menu ------------------------------------------------------ */
   var menuBtn = document.querySelector('[data-menu-toggle]');
@@ -67,24 +27,14 @@
       menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     };
     setMenu(false);
-    menuBtn.addEventListener('click', function () {
-      setMenu(nav.getAttribute('data-open') !== 'true');
-    });
-    /* Escape closes and returns focus to the button, as a menu should. */
+    menuBtn.addEventListener('click', function () { setMenu(nav.getAttribute('data-open') !== 'true'); });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && nav.getAttribute('data-open') === 'true') {
-        setMenu(false); menuBtn.focus();
-      }
+      if (e.key === 'Escape' && nav.getAttribute('data-open') === 'true') { setMenu(false); menuBtn.focus(); }
     });
-    nav.addEventListener('click', function (e) {
-      if (e.target.closest('a')) setMenu(false);
-    });
-    /* Reset when the layout goes back to desktop, so the menu is never stuck
-       open behind a hidden button. */
+    nav.addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
     if (window.matchMedia) {
-      var wide = window.matchMedia('(min-width: 62.0625rem)');
-      var onWide = function (e) { if (e.matches) setMenu(false); };
-      if (wide.addEventListener) wide.addEventListener('change', onWide);
+      var wide = window.matchMedia('(min-width: 75rem)');
+      if (wide.addEventListener) wide.addEventListener('change', function (e) { if (e.matches) setMenu(false); });
     }
   }
 
@@ -92,64 +42,138 @@
   var top = document.querySelector('[data-to-top]');
   if (top) {
     top.addEventListener('click', function () {
-      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
       var h1 = document.querySelector('h1');
       if (h1) { h1.setAttribute('tabindex', '-1'); h1.focus({ preventScroll: true }); }
     });
   }
 
-  /* --- Reading progress, articles only ---------------------------------- */
-  var bar = document.querySelector('[data-progress]');
+  /* --- Scroll: header state, progress bar, back-to-top, depth, parallax -- */
+  var hdr = document.querySelector('.hdr');
+  var bar = document.querySelector('.progress');
   var article = document.querySelector('[data-article]');
-
-  /* --- Scroll-driven bits, batched into one listener -------------------- */
+  var parallax = reduceMotion ? [] : Array.prototype.slice.call(document.querySelectorAll('[data-parallax]'));
+  var depthMarks = [25, 50, 75, 100];
+  var depthSent = {};
+  var readSent = false;
   var ticking = false;
   function onScroll() {
     if (ticking) return;
     ticking = true;
     requestAnimationFrame(function () {
       var y = window.scrollY || document.documentElement.scrollTop;
+      var doc = document.documentElement;
+      var scrollable = doc.scrollHeight - window.innerHeight;
+      var pct = scrollable > 0 ? Math.min(1, Math.max(0, y / scrollable)) : 0;
 
+      if (hdr) hdr.classList.toggle('is-scrolled', y > 8);
+      if (bar) bar.style.setProperty('--p', pct.toFixed(4));
       if (top) top.setAttribute('data-show', String(y > 900));
 
-      if (bar && article) {
-        var start = article.offsetTop;
+      if (article && !readSent) {
         var span = article.offsetHeight - window.innerHeight;
-        var pct = span > 0 ? Math.min(1, Math.max(0, (y - start) / span)) : 0;
-        bar.style.width = (pct * 100).toFixed(1) + '%';
-        if (pct > 0.75 && !bar.dataset.counted) {
-          bar.dataset.counted = '1';
-          track('article_read', location.pathname);
-        }
+        if (span > 0 && (y - article.offsetTop) / span > 0.75) { readSent = true; track('article_read', location.pathname); }
       }
+
+      var seen = Math.round(pct * 100);
+      depthMarks.forEach(function (m) {
+        if (seen >= m && !depthSent[m]) { depthSent[m] = true; track('scroll_depth', String(m)); }
+      });
+
+      /* Parallax: the element drifts against the scroll, a little. */
+      parallax.forEach(function (el) {
+        var r = el.parentElement.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > window.innerHeight) return;
+        var f = parseFloat(el.getAttribute('data-parallax')) || 0.1;
+        var off = (r.top + r.height / 2 - window.innerHeight / 2) * -f;
+        el.style.transform = 'translate3d(0,' + off.toFixed(1) + 'px,0)';
+      });
       ticking = false;
     });
   }
-  if (top || (bar && article)) {
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll, { passive: true });
+  onScroll();
+
+  /* --- Reveal on scroll ------------------------------------------------- */
+  /* Content fades up as it arrives. Anything already on screen when the
+     script runs is left alone, so there is no flicker above the fold. */
+  var REVEAL = '.section-head, .rulecols > *, .paths > li, .topics > li, .journal > li, .tier, main .card, .steps > li,' +
+               ' .scenarios > div, .career, .media, .quote, .compare-wrap, .faq, .versus > div, .lines, .proof li,' +
+               ' .bowling__foot, .imageband__copy, .articles, .pathway, .journey, .continuum, .fitlist, .form, .profile, .taxonomy';
+  if (!reduceMotion && 'IntersectionObserver' in window) {
+    var revealIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add('is-in'); revealIO.unobserve(en.target); }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    document.querySelectorAll(REVEAL).forEach(function (el) {
+      if (el.closest('.hero--home, .hero__grid')) return;
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.92) { el.classList.add('is-in'); return; }
+      var sibs = el.parentElement ? Array.prototype.indexOf.call(el.parentElement.children, el) : 0;
+      el.style.setProperty('--i', String(Math.min(sibs, 6)));
+      el.setAttribute('data-reveal', '');
+      revealIO.observe(el);
+    });
+  } else {
+    document.querySelectorAll('.pathway').forEach(function (el) { el.classList.add('is-in'); });
   }
 
-  /* --- Small entrance transition ---------------------------------------- */
-  var rises = document.querySelectorAll('.rise');
-  if (rises.length && 'IntersectionObserver' in window &&
-      !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)) {
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.setAttribute('data-in', 'true'); io.unobserve(en.target); }
-      });
-    }, { rootMargin: '0px 0px -8% 0px' });
-    rises.forEach(function (el) { io.observe(el); });
-  } else {
-    rises.forEach(function (el) { el.setAttribute('data-in', 'true'); });
+  /* --- Spotlight on cards, fine pointers only ---------------------------- */
+  if (window.matchMedia && window.matchMedia('(pointer: fine)').matches) {
+    document.addEventListener('pointermove', function (e) {
+      var el = e.target.closest ? e.target.closest('.spot') : null;
+      if (!el) return;
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mx', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--my', (e.clientY - r.top) + 'px');
+    }, { passive: true });
   }
+
+  /* --- Sticky mobile CTA ------------------------------------------------- */
+  /* Shown only while none of the sections that already carry the same call
+     to action (hero, tier cards, forms, closing band, footer) is on screen. */
+  var sticky = document.querySelector('[data-sticky]');
+  if (sticky && 'IntersectionObserver' in window) {
+    var onScreen = [];
+    var stickyIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        var i = onScreen.indexOf(en.target);
+        if (en.isIntersecting && i === -1) onScreen.push(en.target);
+        if (!en.isIntersecting && i > -1) onScreen.splice(i, 1);
+      });
+      sticky.setAttribute('data-show', String(onScreen.length === 0));
+    });
+    document.querySelectorAll('[data-sticky-hide], .ftr').forEach(function (el) { stickyIO.observe(el); });
+  }
+
+  /* --- Tier card views --------------------------------------------------- */
+  if ('IntersectionObserver' in window) {
+    var tierIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { track('tier_card_view', en.target.getAttribute('data-tier')); tierIO.unobserve(en.target); }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-tier]').forEach(function (el) { tierIO.observe(el); });
+  }
+
+  /* --- FAQ opens --------------------------------------------------------- */
+  document.querySelectorAll('.faq details').forEach(function (d) {
+    d.addEventListener('toggle', function () {
+      if (d.open) track('faq_open', (d.querySelector('summary') || {}).textContent);
+    });
+  });
+
+  /* --- Checkout starts --------------------------------------------------- */
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('[data-checkout]') : null;
+    if (a) track('checkout_start', a.getAttribute('data-checkout'));
+  });
 
   /* --- Cross-domain attribution ----------------------------------------- */
   /* Tag outbound links to bridgeroad.physio and Halaxy at click time rather
-     than in the markup, so the HTML stays clean and the campaign can be
-     derived from the page the visitor was actually on. Internal links are
-     never touched: tagging same-site navigation destroys attribution. */
+     than in the markup. Internal links are never touched: tagging same-site
+     navigation destroys attribution. */
   if (TCP.utm) {
     document.querySelectorAll('a[data-utm]').forEach(function (a) {
       var href = a.getAttribute('href');
@@ -159,30 +183,111 @@
     });
   }
 
-  /* --- Team enquiry form ------------------------------------------------ */
-  var form = document.querySelector('form[data-enquiry]');
-  if (form) {
+  /* --- Forms ------------------------------------------------------------- */
+  /* One handler for every enquiry form. The form declares its type with
+     data-form (team, player, club) and its analytics prefix with
+     data-events, which produces <prefix>_start, _invalid, _complete and
+     _error. The server validates again; this is for the person typing. */
+  var SUCCESS = {
+    player: '<p><strong>Thanks, your application is in.</strong> I read every one myself and reply within two business days with the next step.</p>',
+    club: '<p><strong>Thanks, that has sent.</strong> I will be in touch within two business days to set up a short call about your squad.</p>',
+    pro: '<p><strong>Thanks, that has reached me directly.</strong> I reply personally, by the contact method you chose, usually within two business days.</p>',
+    team: '<p><strong>Thanks, that has sent.</strong> I answer enquiries myself, usually within two business days.</p>'
+  };
+  var phoneLink = TCP.clinic ? TCP.clinic.phoneLink : 'tel:+61458007583';
+  var phoneText = TCP.clinic ? TCP.clinic.phoneDisplay : '0458 007 583';
+
+  /* Preselect a tier or package from ?tier= / ?package=, and handle links to
+     the same page without a reload. */
+  function preselect(form, params) {
+    var map = { tier: 'membership', package: 'package' };
+    Object.keys(map).forEach(function (k) {
+      var v = params.get(k);
+      var sel = form.querySelector('select[name="' + map[k] + '"]');
+      if (v && sel && sel.querySelector('option[value="' + v + '"]')) {
+        sel.value = v;
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    });
+  }
+  var forms = document.querySelectorAll('form[data-enquiry]');
+  forms.forEach(function (f) { preselect(f, new URLSearchParams(location.search)); });
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest ? e.target.closest('a[href*="?tier="], a[href*="?package="]') : null;
+    if (!a || !forms.length) return;
+    var url = new URL(a.href, location.href);
+    if (url.pathname !== location.pathname || !url.hash) return;
+    var target = document.querySelector(url.hash);
+    if (!target) return;
+    e.preventDefault();
+    forms.forEach(function (f) { preselect(f, url.searchParams); });
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+    target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+    var h = target.querySelector('h2');
+    if (h) { h.setAttribute('tabindex', '-1'); h.focus({ preventScroll: true }); }
+  });
+
+  forms.forEach(function (form) {
+    var type = form.getAttribute('data-form') || 'team';
+    var prefix = form.getAttribute('data-events') || (type + '_enquiry');
     var status = form.querySelector('.formstatus');
     var submit = form.querySelector('button[type="submit"]');
-    var label  = submit ? submit.querySelector('[data-label]') : null;
+    var label = submit ? submit.querySelector('[data-label]') : null;
+    var labelText = label ? label.textContent : '';
+    var started = false;
 
     function fieldOf(input) { return input.closest('.field'); }
+    function controls() {
+      return Array.prototype.slice.call(form.querySelectorAll('input, select, textarea')).filter(function (i) {
+        return i.type !== 'hidden' && !i.disabled && !i.closest('.hp');
+      });
+    }
+    function nameOf(wrap) {
+      var l = wrap.querySelector('label, .label');
+      if (!l) return 'details';
+      return l.textContent.replace(/\(.*?\)/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+    }
+
+    /* Conditional fields: data-show-if="field=a|b" or "field<18". Hidden
+       fields are disabled so they neither block submission nor get sent. */
+    var conditional = form.querySelectorAll('[data-show-if]');
+    function evaluate() {
+      conditional.forEach(function (wrap) {
+        var rule = wrap.getAttribute('data-show-if');
+        var m = rule.match(/^([\w-]+)\s*(<|=)\s*(.+)$/);
+        if (!m) return;
+        var src = form.querySelector('[name="' + m[1] + '"]');
+        var v = src ? src.value.trim() : '';
+        var show = m[2] === '<'
+          ? (v !== '' && Number(v) < Number(m[3]))
+          : m[3].split('|').indexOf(v) > -1;
+        wrap.hidden = !show;
+        wrap.querySelectorAll('input, select, textarea').forEach(function (i) { i.disabled = !show; });
+      });
+    }
+    if (conditional.length) {
+      form.addEventListener('input', evaluate);
+      form.addEventListener('change', evaluate);
+      evaluate();
+    }
 
     function validate(input) {
       var wrap = fieldOf(input);
       if (!wrap) return true;
       var msg = '';
-      var v = (input.value || '').trim();
-
+      var v = input.type === 'checkbox' ? (input.checked ? 'on' : '') : (input.value || '').trim();
       if (input.required && !v) {
-        msg = (wrap.querySelector('label') || {}).textContent;
-        msg = 'Please enter your ' + (msg ? msg.toLowerCase().replace(/\s*\*$/, '') : 'details') + '.';
+        if (input.type === 'checkbox') msg = 'Please tick this box to continue.';
+        else if (input.tagName === 'SELECT') msg = 'Please choose your ' + nameOf(wrap) + '.';
+        else msg = 'Please enter your ' + nameOf(wrap) + '.';
       } else if (input.type === 'email' && v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
         msg = 'That email address does not look right. Check it and try again.';
+      } else if (input.type === 'number' && v) {
+        var n = Number(v), min = input.min !== '' ? Number(input.min) : -Infinity, max = input.max !== '' ? Number(input.max) : Infinity;
+        if (isNaN(n) || n < min || n > max) msg = 'Enter a number between ' + input.min + ' and ' + input.max + '.';
       } else if (input.name === 'message' && v && v.length < 20) {
-        msg = 'A sentence or two about your squad helps me answer usefully.';
+        msg = 'A sentence or two helps me answer usefully.';
       }
-
       var err = wrap.querySelector('.err');
       if (msg) {
         wrap.setAttribute('data-invalid', 'true');
@@ -195,31 +300,34 @@
       return true;
     }
 
-    form.querySelectorAll('input, textarea').forEach(function (i) {
-      i.addEventListener('blur', function () { if (i.value.trim()) validate(i); });
-      i.addEventListener('input', function () {
-        var w = fieldOf(i);
-        if (w && w.getAttribute('data-invalid') === 'true') validate(i);
-      });
+    form.addEventListener('focusin', function () {
+      if (!started) { started = true; track(prefix + '_start', type); }
+    });
+    form.addEventListener('blur', function (e) {
+      var i = e.target;
+      if (i.matches && i.matches('input, select, textarea') && (i.value || '').trim()) validate(i);
+    }, true);
+    form.addEventListener('input', function (e) {
+      var w = fieldOf(e.target);
+      if (w && w.getAttribute('data-invalid') === 'true') validate(e.target);
+    });
+    form.addEventListener('change', function (e) {
+      var w = fieldOf(e.target);
+      if (w && w.getAttribute('data-invalid') === 'true') validate(e.target);
     });
 
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       if (status) status.removeAttribute('data-state');
 
-      var fields = Array.prototype.slice.call(form.querySelectorAll('input[required], textarea[required], input[type="email"]'));
-      var bad = fields.filter(function (i) { return !validate(i); });
-      if (bad.length) {
-        bad[0].focus();
-        track('team_enquiry_invalid', bad[0].name);
-        return;
-      }
+      var bad = controls().filter(function (i) { return !validate(i); });
+      if (bad.length) { bad[0].focus(); track(prefix + '_invalid', bad[0].name); return; }
 
-      /* Honeypot. A real person never fills this in; a bot fills everything.
-         Answer as though it succeeded so the bot does not learn otherwise. */
+      /* Honeypot: a person never fills it; a bot fills everything. Answer as
+         though it worked so the bot learns nothing. */
       var hp = form.querySelector('input[name="company"]');
       if (hp && hp.value) {
-        if (status) { status.setAttribute('data-state', 'ok'); status.innerHTML = '<p>Thanks. Your enquiry is on its way.</p>'; }
+        if (status) { status.setAttribute('data-state', 'ok'); status.innerHTML = SUCCESS[type] || SUCCESS.team; }
         form.reset();
         return;
       }
@@ -228,7 +336,10 @@
       if (label) label.textContent = 'Sending…';
 
       var payload = {};
-      new FormData(form).forEach(function (v, k) { payload[k] = v; });
+      new FormData(form).forEach(function (v, k) {
+        payload[k] = payload[k] ? payload[k] + ', ' + v : v;
+      });
+      var detail = payload.membership || payload.package || type;
 
       fetch('/api/enquiry', {
         method: 'POST',
@@ -239,29 +350,28 @@
       .then(function () {
         if (status) {
           status.setAttribute('data-state', 'ok');
-          status.innerHTML = '<p><strong>Thanks, that has sent.</strong> I answer enquiries myself, usually within two business days. If it is time-critical, call ' +
-            '<a href="' + (TCP.clinic ? TCP.clinic.phoneLink : 'tel:+61458007583') + '" data-track="phone_click">' +
-            (TCP.clinic ? TCP.clinic.phoneDisplay : '0458 007 583') + '</a>.</p>';
+          status.innerHTML = (SUCCESS[type] || SUCCESS.team) +
+            '<p>If it is time-critical, call <a href="' + phoneLink + '" data-track="phone_click">' + phoneText + '</a>.</p>';
           status.focus();
         }
         form.reset();
-        track('team_enquiry_submit');
+        if (conditional.length) evaluate();
+        track(prefix + '_complete', detail);
       })
       .catch(function (err) {
         if (status) {
           status.setAttribute('data-state', 'err');
           status.innerHTML = '<p><strong>That did not send.</strong> Rather than lose what you wrote, email it to ' +
             '<a href="mailto:thihan@thecricket.physio" data-track="email_click">thihan@thecricket.physio</a> ' +
-            'or call <a href="' + (TCP.clinic ? TCP.clinic.phoneLink : 'tel:+61458007583') + '" data-track="phone_click">' +
-            (TCP.clinic ? TCP.clinic.phoneDisplay : '0458 007 583') + '</a>.</p>';
+            'or call <a href="' + phoneLink + '" data-track="phone_click">' + phoneText + '</a>.</p>';
           status.focus();
         }
-        track('team_enquiry_error', String(err && err.message));
+        track(prefix + '_error', String(err && err.message));
       })
       .then(function () {
         if (submit) { submit.removeAttribute('data-loading'); submit.removeAttribute('aria-disabled'); }
-        if (label) label.textContent = 'Send enquiry';
+        if (label) label.textContent = labelText;
       });
     });
-  }
+  });
 })();

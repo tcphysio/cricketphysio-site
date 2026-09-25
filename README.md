@@ -1,7 +1,14 @@
 # thecricket.physio
 
 Static site for The Cricket Physio. Plain HTML, CSS and JavaScript. No framework,
-no dependencies, no build step. Deploys to Vercel as-is.
+no npm dependencies, no deploy build. Deploys to Vercel as-is.
+
+**The master brief is `docs/website-brief.md`.** Read it before changing
+positioning, copy, layout or the design system. `CLAUDE.md` summarises the
+rules an agent must follow.
+
+The site is dark only, by the owner's decision. There is no light theme and no
+toggle.
 
 Built to the same pattern as `bridgeroad-site`, deliberately: one person
 maintains both, and two sites that work the same way are half the thing to learn.
@@ -10,41 +17,83 @@ maintains both, and two sites that work the same way are half the thing to learn
 
 ```
 index.html                                 home
+cricket-performance/index.html             memberships landing (/cricket-performance)
+cricket-performance/players.html           player memberships, application form
+cricket-performance/clubs.html             club packages, enquiry form
+professional-players.html                  professional and international players, enquiry form
 about.html  services.html  telehealth.html  in-person.html
 return-to-performance.html  teams.html  book.html  contact.html  faq.html
 cricket-injuries/index.html                injury guide hub
 cricket-injuries/*.html                    individual guides
 bowling/index.html                         workload + return to bowling
-resources/index.html                       education hub
+resources/index.html                       The Cricket Physio Journal
 privacy.html terms.html disclaimer.html accessibility.html
 404.html
-api/enquiry.js                             team enquiry handler (Vercel Function)
-site-config.js                             business details, UTM, tracking events
-style.css  script.js
-assets/                                    favicon, touch icon, OG image
+api/enquiry.js                             team, player, club and professional form handler (Vercel Function)
+site-config.js                             business details, UTM, analytics event registry
+style.css  script.js                       design system and behaviour
+data/offers.json                           every membership and club price, inclusion and rule
+_partials/head.html                        icons, manifest, font preloads, stylesheet
+_partials/header.html  _partials/footer.html   shared chrome, written into every page
+_tools/build.py                            writes partials, offer blocks, FAQ schema and cache hashes into HTML
+_tools/qa.py  _tools/lint.py               link/heading/metadata QA and copy lint
+assets/fonts/                              self-hosted Instrument Serif and Manrope
+assets/brand/                              logo (reversed for dark), favicons, app icons
+assets/logos/                              organisation logos for the home marquee (permission pending)
+assets/img/                                optimised photography
+favicon.ico  site.webmanifest              browser and home-screen icons
+docs/website-brief.md                      master brief and design-system specification
 vercel.json                                redirects, headers, clean URLs
+.vercelignore                              keeps docs, data, tools and raw logos off the live site
 ```
 
 ## Editing
 
-The HTML files are the source of truth. Edit them directly.
+The HTML files are what Vercel serves. Edit them directly, except for the
+generated regions, which `_tools/build.py` owns:
 
-Nav and footer are repeated in each file, which is the trade made here and on the
-Bridge Road site: no build step to run, at the cost of a find-and-replace when a
-nav item changes. Search the repo for the old text and change every instance.
+- Between `<!-- partial:head -->`, `<!-- partial:header -->` or `<!-- partial:footer -->`
+  and the matching closing marker: edit the file in `_partials/` instead.
+- Between `<!-- build:NAME -->` and `<!-- /build:NAME -->`: edit `data/offers.json`.
+- The text of any element with `data-offer="KEY"`: edit `data/offers.json`.
+- Between `<!-- build:faq-schema -->` markers: edit the visible FAQ on the page.
+- The `?v=` hash on css, js and image URLs: computed by the build from the file's
+  content. `vercel.json` caches those files as immutable for a year, so the hash is
+  what makes a changed file reach returning visitors. Fonts are not hashed; give a
+  changed font file a new name.
+
+Then run, from the repo root, before every commit:
+
+```
+python3 _tools/build.py          # writes the generated regions
+python3 _tools/build.py --check  # fails if anything is stale
+cd _tools && python3 qa.py && python3 lint.py
+```
+
+The build runs on your machine, not on deploy, so the prices and nav stay in the
+markup for search engines and for visitors without JavaScript.
 
 Business details, booking URLs and UTM tagging live in `site-config.js`. Change a
 detail there and the links follow. Contact details are **also** written into the
 HTML of each page, because search engines need them in the markup rather than
 injected by JavaScript. If you change one, search the repo for the old value.
 
-## Fees
+## Fees and prices
 
-Fees are published on bridgeroad.physio, which is the single source of truth.
-Only the two telehealth figures are repeated here, on `/telehealth`, `/services`
-and `/book`. Change a telehealth fee and those three pages move together with
-the Bridge Road fees page and the Halaxy appointment types. Miss one and a
-patient sees a different figure on the site than at the checkout.
+Membership and club prices live in `data/offers.json` and nowhere else. Change a
+price there, run the build, commit.
+
+The member-rate table repeats five in-person fees from bridgeroad.physio
+(initial, review, extended, Sports Injury Screening, Return to Performance
+Assessment). Those five figures in `data/offers.json` must match the Bridge Road
+fees page and Halaxy. The two telehealth figures are still written by hand on
+`/telehealth`, `/services` and `/book`. Miss one and a patient sees a different
+figure on the site than at the checkout.
+
+No checkout is connected yet. Every tier CTA goes to the application form with the
+tier preselected. When a payment link exists, put it in the tier's
+`cta.checkoutUrl` and rebuild: the CTA then goes straight to checkout and fires
+`checkout_start`.
 
 ## Environment variables
 
@@ -52,7 +101,7 @@ Set in the Vercel dashboard, not in the repo:
 
 | Variable | Required | Default |
 |---|---|---|
-| `RESEND_API_KEY` | yes, or the team enquiry form returns 500 | none |
+| `RESEND_API_KEY` | yes, or every form returns 500 | none |
 | `ENQUIRY_TO` | no | `thihan@thecricket.physio` |
 | `ENQUIRY_FROM` | no | `The Cricket Physio <enquiries@thecricket.physio>` |
 
@@ -67,10 +116,18 @@ Set in the Vercel dashboard, not in the repo:
   tagging same-site links restarts the session in most analytics tools and
   destroys the attribution the tags exist to collect.
 - **`data-track` on anything worth counting.** The handler in `site-config.js`
-  pushes to `window.dataLayer`. No analytics is loaded yet; when one is added it
-  picks these up with no markup changes.
+  pushes to `window.dataLayer`, and `script.js` adds form, tier-view, FAQ and
+  scroll-depth events. The full registry is in `site-config.js`. No analytics is
+  loaded yet; when one is added it picks these up with no markup changes.
 - **Review dates on clinical pages.** Every guide shows when it was last
   reviewed. Update the date when you revise the content, not when you fix a typo.
 - **No testimonials or review excerpts.** AHPRA advertising rules prohibit
   testimonials about clinical care for regulated health services. The Bridge Road
   site made this decision deliberately in September 2026. It applies here too.
+- **No "specialist" in copy about Thihan.** Use "cricket physio" or
+  "cricket-specific". See the brief, section 8.
+- **Copy lint is not optional.** `lint.py` enforces the banned-word list and the
+  no-dash rule on every page. Allowlist an exact phrase only when the owner has
+  chosen to keep it.
+- **One primary button per view.** Tier cards: the highlighted tier gets the
+  primary style; the others are secondary.
